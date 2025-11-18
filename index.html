@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เกมฝึกการสนทนา - ประกันลดหย่อนภาษี</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Kanit', sans-serif;
         }
         
         body {
@@ -62,7 +63,8 @@
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
-            min-height: 200px;
+            min-height: 300px;
+            position: relative;
         }
         
         .character {
@@ -72,25 +74,63 @@
             border-radius: 10px;
             background-color: #f8f9fa;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         
         .character-img {
-            width: 120px;
-            height: 120px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             object-fit: cover;
             margin: 0 auto 15px;
             border: 5px solid #2a4ab0;
         }
         
-        .dialogue-box {
-            background-color: white;
+        .speech-bubble {
+            position: absolute;
+            background: white;
             border: 2px solid #2a4ab0;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 15px;
-            margin: 10px 0;
-            min-height: 100px;
+            max-width: 80%;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .speech-bubble.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .customer-bubble {
+            top: 10px;
+            left: 10px;
+        }
+        
+        .employee-bubble {
+            bottom: 10px;
+            right: 10px;
+        }
+        
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            border-style: solid;
+            border-width: 10px;
+        }
+        
+        .customer-bubble:after {
+            top: 100%;
+            left: 30px;
+            border-color: #2a4ab0 transparent transparent transparent;
+        }
+        
+        .employee-bubble:after {
+            bottom: 100%;
+            right: 30px;
+            border-color: transparent transparent #2a4ab0 transparent;
         }
         
         .options {
@@ -281,8 +321,8 @@
             }
             
             .character-img {
-                width: 100px;
-                height: 100px;
+                width: 120px;
+                height: 120px;
             }
             
             .skill-analysis {
@@ -316,11 +356,11 @@
                     
                     <div class="gender-selection">
                         <div class="selection-option" data-gender="male">
-                            <img src="https://i.pravatar.cc/150?img=12" alt="พนักงานชาย" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=banker-male&backgroundColor=65c9ff,b6e3f4" alt="พนักงานชาย" class="selection-img">
                             <p>พนักงานชาย</p>
                         </div>
                         <div class="selection-option" data-gender="female">
-                            <img src="https://i.pravatar.cc/150?img=33" alt="พนักงานหญิง" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=banker-female&backgroundColor=ffd5dc,d1d4f9" alt="พนักงานหญิง" class="selection-img">
                             <p>พนักงานหญิง</p>
                         </div>
                     </div>
@@ -337,22 +377,22 @@
                     
                     <div class="customer-selection">
                         <div class="selection-option" data-customer="achiever">
-                            <img src="https://i.pravatar.cc/150?img=5" alt="เป้าประสงค์" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=achiever-male&backgroundColor=ffafcc,cdb4db" alt="เป้าประสงค์" class="selection-img">
                             <p>เป้าประสงค์ (ชาย)</p>
                             <small>มุ่งเน้นผลลัพธ์</small>
                         </div>
                         <div class="selection-option" data-customer="celebrity">
-                            <img src="https://i.pravatar.cc/150?img=61" alt="หนึ่งดารา" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=celebrity-female&backgroundColor=ffc8dd,ffafcc" alt="หนึ่งดารา" class="selection-img">
                             <p>หนึ่งดารา (หญิง)</p>
                             <small>ชอบการยอมรับ</small>
                         </div>
                         <div class="selection-option" data-customer="careful">
-                            <img src="https://i.pravatar.cc/150?img=38" alt="ถนอมจิตร" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=careful-female&backgroundColor=a2d2ff,bde0fe" alt="ถนอมจิตร" class="selection-img">
                             <p>ถนอมจิตร (หญิง)</p>
                             <small>ระมัดระวัง</small>
                         </div>
                         <div class="selection-option" data-customer="analytical">
-                            <img src="https://i.pravatar.cc/150?img=8" alt="คิดคำนวณ" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=analytical-male&backgroundColor=ccd5ae,e9edc9" alt="คิดคำนวณ" class="selection-img">
                             <p>คิดคำนวณ (ชาย)</p>
                             <small>ใช้ข้อมูลตัดสินใจ</small>
                         </div>
@@ -370,17 +410,17 @@
                     
                     <div class="situation-selection">
                         <div class="selection-option" data-situation="branch">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="ที่สาขาธนาคาร" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=branch&backgroundColor=fec89a,f9dcc4" alt="ที่สาขาธนาคาร" class="selection-img">
                             <p>ที่สาขาธนาคาร</p>
                             <small>ลูกค้าเดินเข้ามาเอง</small>
                         </div>
                         <div class="selection-option" data-situation="appointment">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3596/3596181.png" alt="นัดหมายล่วงหน้า" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=appointment&backgroundColor=cad2c5,84a98c" alt="นัดหมายล่วงหน้า" class="selection-img">
                             <p>นัดหมายล่วงหน้า</p>
                             <small>ลูกค้ามีนัด</small>
                         </div>
                         <div class="selection-option" data-situation="event">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3138/3138805.png" alt="งานอีเวนต์" class="selection-img">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=event&backgroundColor=f4a261,e76f51" alt="งานอีเวนต์" class="selection-img">
                             <p>งานอีเวนต์</p>
                             <small>พบในงานแสดงสินค้า</small>
                         </div>
@@ -404,23 +444,13 @@
                     <div class="character">
                         <img id="employee-img" src="" alt="พนักงานธนาคาร" class="character-img">
                         <h3 id="employee-name">พนักงานธนาคาร</h3>
+                        <div id="employee-bubble" class="speech-bubble employee-bubble"></div>
                     </div>
                     
                     <div class="character">
                         <img id="customer-img" src="" alt="ลูกค้า" class="character-img">
                         <h3 id="customer-name">ลูกค้า</h3>
-                    </div>
-                </div>
-                
-                <div class="dialogue-box">
-                    <div id="customer-dialogue">
-                        <!-- ข้อความลูกค้าจะแสดงที่นี่ -->
-                    </div>
-                </div>
-                
-                <div class="dialogue-box">
-                    <div id="employee-dialogue">
-                        <!-- ข้อความพนักงานจะแสดงที่นี่ -->
+                        <div id="customer-bubble" class="speech-bubble customer-bubble"></div>
                     </div>
                 </div>
                 
@@ -465,7 +495,7 @@
             employees: {
                 male: {
                     name: "คุณธนวัฒน์",
-                    image: "https://i.pravatar.cc/150?img=12",
+                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=banker-male&backgroundColor=65c9ff,b6e3f4",
                     dialogues: {
                         greeting: ["สวัสดีครับ ผมธนวัฒน์ ยินดีให้บริการครับ", "สวัสดีครับ มีอะไรให้ผมช่วยเหลือไหมครับ"],
                         askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างครับ", "คุณสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมครับ"],
@@ -475,7 +505,7 @@
                 },
                 female: {
                     name: "คุณสาวิตรี",
-                    image: "https://i.pravatar.cc/150?img=33",
+                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=banker-female&backgroundColor=ffd5dc,d1d4f9",
                     dialogues: {
                         greeting: ["สวัสดีค่ะ ดิฉันสาวิตรี ยินดีให้บริการค่ะ", "สวัสดีค่ะ มีอะไรให้ดิฉันช่วยเหลือไหมคะ"],
                         askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างคะ", "คุณสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมคะ"],
@@ -489,7 +519,7 @@
             customers: {
                 achiever: {
                     name: "คุณวิศวะ",
-                    image: "https://i.pravatar.cc/150?img=5",
+                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=achiever-male&backgroundColor=ffafcc,cdb4db",
                     type: "เป้าประสงค์",
                     description: "มุ่งเน้นผลลัพธ์ ชอบความชัดเจน รวดเร็ว และตรงประเด็น",
                     dialogues: {
@@ -518,7 +548,7 @@
                 },
                 celebrity: {
                     name: "คุณดาว",
-                    image: "https://i.pravatar.cc/150?img=61",
+                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=celebrity-female&backgroundColor=ffc8dd,ffafcc",
                     type: "หนึ่งดารา",
                     description: "ชอบการยอมรับ ความพิเศษ และความสะดวกสบาย",
                     dialogues: {
@@ -547,7 +577,7 @@
                 },
                 careful: {
                     name: "คุณสายใจ",
-                    image: "https://i.pravatar.cc/150?img=38",
+                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=careful-female&backgroundColor=a2d2ff,bde0fe",
                     type: "ถนอมจิตร",
                     description: "ระมัดระวัง ต้องการความปลอดภัย และข้อมูลที่ครบถ้วน",
                     dialogues: {
@@ -576,7 +606,7 @@
                 },
                 analytical: {
                     name: "คุณวิทย์",
-                    image: "https://i.pravatar.cc/150?img=8",
+                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=analytical-male&backgroundColor=ccd5ae,e9edc9",
                     type: "คิดคำนวณ",
                     description: "ใช้ข้อมูลและตรรกะในการตัดสินใจ ชอบรายละเอียดและตัวเลข",
                     dialogues: {
@@ -812,7 +842,6 @@
         let selectedGender = null;
         let selectedCustomer = null;
         let selectedSituation = null;
-        let backgroundMusic;
 
         // อ้างอิง DOM elements
         const genderSelection = document.getElementById('gender-selection');
@@ -828,8 +857,8 @@
         const employeeName = document.getElementById('employee-name');
         const customerImg = document.getElementById('customer-img');
         const customerName = document.getElementById('customer-name');
-        const customerDialogue = document.getElementById('customer-dialogue');
-        const employeeDialogue = document.getElementById('employee-dialogue');
+        const customerBubble = document.getElementById('customer-bubble');
+        const employeeBubble = document.getElementById('employee-bubble');
         const dialogueOptions = document.getElementById('dialogue-options');
         const currentScoreDisplay = document.getElementById('current-score');
         const finalScoreDisplay = document.getElementById('final-score');
@@ -926,8 +955,17 @@
             
             // แสดงบทสนทนาของลูกค้า (ปรับตามสถานการณ์)
             const situationDialogues = customerData.dialogues[selectedSituation];
-            customerDialogue.textContent = situationDialogues[currentScene] || scene.customer;
-            employeeDialogue.textContent = "";
+            const customerDialogueText = situationDialogues[currentScene] || scene.customer;
+            
+            // ล้าง speech bubble ก่อนหน้า
+            customerBubble.classList.remove('active');
+            employeeBubble.classList.remove('active');
+            
+            // แสดงข้อความลูกค้าใน speech bubble หลังจากหน่วงเวลาเล็กน้อย
+            setTimeout(() => {
+                customerBubble.textContent = customerDialogueText;
+                customerBubble.classList.add('active');
+            }, 500);
             
             // สร้างตัวเลือกบทสนทนา
             dialogueOptions.innerHTML = "";
@@ -953,8 +991,9 @@
             const totalScore = score.clarity + score.relevance + score.relationship - score.pressure;
             currentScoreDisplay.textContent = totalScore;
             
-            // แสดงข้อความที่พนักงานเลือก
-            employeeDialogue.textContent = optionText;
+            // แสดงข้อความที่พนักงานเลือกใน speech bubble
+            employeeBubble.textContent = optionText;
+            employeeBubble.classList.add('active');
             
             // ลบตัวเลือกทั้งหมด
             dialogueOptions.innerHTML = "";
@@ -962,7 +1001,7 @@
             // ไปยังฉากถัดไปหลังจากหน่วงเวลา
             setTimeout(() => {
                 loadScene(currentScene + 1);
-            }, 2000);
+            }, 3000);
         }
 
         // จบเกม
