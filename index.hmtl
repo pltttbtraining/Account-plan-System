@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมฝึกการสนทนา - ประกันลดหย่อนภาษี</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #1a3a8f, #2a4ab0);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 5px solid #fdbb2d;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .scene {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .active {
+            display: flex;
+        }
+        
+        .characters {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            min-height: 250px;
+        }
+        
+        .character {
+            text-align: center;
+            width: 45%;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .character-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 5px solid #2a4ab0;
+        }
+        
+        .dialogue-box {
+            background-color: white;
+            border: 2px solid #2a4ab0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 100px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .option {
+            background-color: #e9ecef;
+            border: 2px solid #adb5bd;
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .option:hover {
+            background-color: #2a4ab0;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            color: #1a3a8f;
+        }
+        
+        .result-screen {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .result-title {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #1a3a8f;
+        }
+        
+        .result-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2a4ab0;
+            margin: 20px 0;
+        }
+        
+        .result-feedback {
+            font-size: 18px;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #1a3a8f, #2a4ab0);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gender-selection {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .gender-option {
+            text-align: center;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .gender-option:hover, .gender-option.selected {
+            border-color: #2a4ab0;
+            background-color: #f0f4ff;
+        }
+        
+        .gender-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid #adb5bd;
+        }
+        
+        .selected .gender-img {
+            border-color: #2a4ab0;
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .characters {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .character {
+                width: 90%;
+                margin-bottom: 15px;
+            }
+            
+            .character-img {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>เกมฝึกการสนทนา: การนำเสนอประกันลดหย่อนภาษี</h1>
+            <p>สำหรับพนักงานธนาคาร - ฝึกทักษะการเป็นที่ปรึกษาไม่ยัดเยียด</p>
+        </header>
+        
+        <div class="game-area">
+            <!-- หน้าเลือกเพศพนักงาน -->
+            <div id="gender-selection" class="scene active">
+                <div class="dialogue-box">
+                    <h2>เลือกเพศของพนักงานธนาคาร</h2>
+                    <p>เลือกเพศของคุณเพื่อกำหนดตัวละครและบทสนทนาให้เหมาะสม</p>
+                    
+                    <div class="gender-selection">
+                        <div class="gender-option" data-gender="male">
+                            <img src="https://i.pravatar.cc/150?img=12" alt="พนักงานชาย" class="gender-img">
+                            <p>พนักงานชาย</p>
+                        </div>
+                        <div class="gender-option" data-gender="female">
+                            <img src="https://i.pravatar.cc/150?img=33" alt="พนักงานหญิง" class="gender-img">
+                            <p>พนักงานหญิง</p>
+                        </div>
+                    </div>
+                    
+                    <button id="start-game" class="btn" disabled>เริ่มเกม</button>
+                </div>
+            </div>
+            
+            <!-- หน้าเกมหลัก -->
+            <div id="game-scene" class="scene">
+                <div class="score-display">
+                    คะแนน: <span id="current-score">0</span>
+                </div>
+                
+                <div class="characters">
+                    <div class="character">
+                        <img id="employee-img" src="" alt="พนักงานธนาคาร" class="character-img">
+                        <h3 id="employee-name">พนักงานธนาคาร</h3>
+                    </div>
+                    
+                    <div class="character">
+                        <img src="https://i.pravatar.cc/150?img=8" alt="ลูกค้า" class="character-img">
+                        <h3>คุณสมชาย (ลูกค้า)</h3>
+                    </div>
+                </div>
+                
+                <div class="dialogue-box">
+                    <div id="customer-dialogue">
+                        <!-- ข้อความลูกค้าจะแสดงที่นี่ -->
+                    </div>
+                </div>
+                
+                <div class="dialogue-box">
+                    <div id="employee-dialogue">
+                        <!-- ข้อความพนักงานจะแสดงที่นี่ -->
+                    </div>
+                </div>
+                
+                <div class="options" id="dialogue-options">
+                    <!-- ตัวเลือกบทสนทนาจะแสดงที่นี่ -->
+                </div>
+            </div>
+            
+            <!-- หน้าผลลัพธ์ -->
+            <div id="result-scene" class="scene">
+                <div class="result-screen">
+                    <h2 class="result-title">สรุปผลการสนทนา</h2>
+                    <div class="result-score" id="final-score">0</div>
+                    
+                    <div class="result-feedback" id="result-feedback">
+                        <!-- คำติชมจะแสดงที่นี่ -->
+                    </div>
+                    
+                    <button id="restart-game" class="btn">เล่นอีกครั้ง</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="music-control" id="music-control">
+        <span>🔊</span> เพลงพื้นหลัง
+    </div>
+    
+    <audio id="background-music" loop>
+        <source src="https://assets.codepen.io/1468070/soft-background-music.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        // ข้อมูลเกม
+        const gameData = {
+            male: {
+                name: "คุณธนวัฒน์",
+                image: "https://i.pravatar.cc/150?img=12",
+                dialogues: {
+                    greeting: ["สวัสดีครับ ผมธนวัฒน์ ยินดีให้บริการครับ", "สวัสดีครับ มีอะไรให้ผมช่วยเหลือไหมครับ"],
+                    askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างครับ", "คุณสมชายสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมครับ"],
+                    explainInsurance: ["ประกันชีวิตแบบนี้ช่วยลดหย่อนภาษีได้และยังเป็นการออมทรัพย์อีกทางหนึ่งครับ", "ผมขอแนะนำประกันที่เหมาะกับคุณ ซึ่งจะช่วยลดหย่อนภาษีและสร้างความมั่นคงให้อนาคตครับ"],
+                    handleObjection: ["เข้าใจดีครับ ลองพิจารณาดูแบบไม่กดดันนะครับ", "ไม่เป็นไรครับ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมผมยินดีช่วยเหลือเสมอครับ"]
+                }
+            },
+            female: {
+                name: "คุณสาวิตรี",
+                image: "https://i.pravatar.cc/150?img=33",
+                dialogues: {
+                    greeting: ["สวัสดีค่ะ ดิฉันสาวิตรี ยินดีให้บริการค่ะ", "สวัสดีค่ะ มีอะไรให้ดิฉันช่วยเหลือไหมคะ"],
+                    askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างคะ", "คุณสมชายสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมคะ"],
+                    explainInsurance: ["ประกันชีวิตแบบนี้ช่วยลดหย่อนภาษีได้และยังเป็นการออมทรัพย์อีกทางหนึ่งค่ะ", "ดิฉันขอแนะนำประกันที่เหมาะกับคุณ ซึ่งจะช่วยลดหย่อนภาษีและสร้างความมั่นคงให้อนาคตค่ะ"],
+                    handleObjection: ["เข้าใจดีค่ะ ลองพิจารณาดูแบบไม่กดดันนะคะ", "ไม่เป็นไรค่ะ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมดิฉันยินดีช่วยเหลือเสมอค่ะ"]
+                }
+            }
+        };
+
+        // ข้อมูลบทสนทนา
+        const conversationData = [
+            {
+                customer: "สวัสดีครับ ผมมาสอบถามเกี่ยวกับการลดหย่อนภาษีสิ้นปีน่ะครับ",
+                options: [
+                    { text: "สวัสดีครับ/ค่ะ มีเอกสารอะไรให้ผม/ดิฉันช่วยดูบ้างไหมครับ/คะ", score: 3 },
+                    { text: "สวัสดีครับ/ค่ะ ยินดีให้บริการครับ/ค่ะ ลดหย่อนภาษีใช่ไหมครับ/ค่ะ?", score: 5 },
+                    { text: "อ่า..ใช่ครับ/ค่ะ เรามีประกันลดหย่อนภาษีอยู่ อยากรู้รายละเอียดไหมครับ/ค่ะ?", score: 2 }
+                ]
+            },
+            {
+                customer: "ผมได้ยินมาว่ามีประกันชีวิตที่ช่วยลดหย่อนภาษีได้ ไม่ทราบว่ามีแบบไหนบ้าง",
+                options: [
+                    { text: "ผม/ดิฉันขอแนะนำประกันแบบสะสมทรัพย์ครับ/ค่ะ ซึ่งนอกจากคุ้มครองชีวิตแล้วยังได้เงินคืนและลดหย่อนภาษีได้", score: 5 },
+                    { text: "เรามีหลายแบบเลยครับ/ค่ะ แต่ที่นิยมคือแบบคุ้มครองชีวิตและแบบสะสมทรัพย์", score: 3 },
+                    { text: "ประกันชีวิตลดหย่อนภาษีได้นะครับ/ค่ะ ต้องการแบบไหนล่ะครับ/คะ?", score: 1 }
+                ]
+            },
+            {
+                customer: "แล้วแบบสะสมทรัพย์นี่ต้องจ่ายเบี้ยประมาณเท่าไหร่ และลดหย่อนภาษีได้เท่าไร",
+                options: [
+                    { text: "เบี้ยประกันขึ้นอยู่กับอายุและความคุ้มครองที่คุณต้องการครับ/ค่ะ ถ้าให้ดีผม/ดิฉันต้องขอข้อมูลเพิ่มเติมนิดหนึ่ง", score: 5 },
+                    { text: "เริ่มต้นที่เดือนละ 1,000 บาทครับ/ค่ะ ลดหย่อนภาษีได้ตามจำนวนเบี้ยที่จ่ายจริง", score: 3 },
+                    { text: "ไม่ต้องกังวลเรื่องราคาครับ/ค่ะ เรามีหลายแผนให้เลือก", score: 2 }
+                ]
+            },
+            {
+                customer: "ผมยังไม่แน่ใจนะ เพราะตอนนี้ภาระทางการเงินก็มีอยู่",
+                options: [
+                    { text: "เข้าใจดีครับ/ค่ะ ลองพิจารณาดูแบบไม่กดดันนะครับ/ค่ะ ถ้าสนใจเมื่อไหร่ติดต่อมาได้ตลอดเวลา", score: 5 },
+                    { text: "ไม่เป็นไรครับ/ค่ะ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมผม/ดิฉันยินดีช่วยเหลือเสมอครับ/ค่ะ", score: 4 },
+                    { text: "แต่ถ้าคุณไม่ทำตอนนี้ อาจจะเสียโอกาสในการลดหย่อนภาษีปีนี้นะครับ/คะ", score: 1 }
+                ]
+            },
+            {
+                customer: "ขอบคุณสำหรับข้อมูลครับ ผมจะกลับไปคิดดูก่อน",
+                options: [
+                    { text: "ไม่เป็นไรครับ/ค่ะ ถ้ามีคำถามสามารถติดต่อมาได้ตลอดเวลานะครับ/ค่ะ", score: 5 },
+                    { text: "โอเคครับ/ค่ะ แล้วค่อยมาต่อใหม่", score: 3 },
+                    { text: "คุณควรตัดสินใจเร็วๆ นะครับ/คะ เพราะใกล้สิ้นปีแล้ว", score: 1 }
+                ]
+            }
+        ];
+
+        // ตัวแปรเกม
+        let currentScene = 0;
+        let score = 0;
+        let selectedGender = null;
+        let backgroundMusic;
+
+        // อ้างอิง DOM elements
+        const genderSelection = document.getElementById('gender-selection');
+        const gameScene = document.getElementById('game-scene');
+        const resultScene = document.getElementById('result-scene');
+        const startGameBtn = document.getElementById('start-game');
+        const restartGameBtn = document.getElementById('restart-game');
+        const employeeImg = document.getElementById('employee-img');
+        const employeeName = document.getElementById('employee-name');
+        const customerDialogue = document.getElementById('customer-dialogue');
+        const employeeDialogue = document.getElementById('employee-dialogue');
+        const dialogueOptions = document.getElementById('dialogue-options');
+        const currentScoreDisplay = document.getElementById('current-score');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const resultFeedback = document.getElementById('result-feedback');
+        const musicControl = document.getElementById('music-control');
+        const backgroundMusicElement = document.getElementById('background-music');
+
+        // เลือกเพศพนักงาน
+        document.querySelectorAll('.gender-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.gender-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                selectedGender = this.getAttribute('data-gender');
+                startGameBtn.disabled = false;
+            });
+        });
+
+        // เริ่มเกม
+        startGameBtn.addEventListener('click', function() {
+            genderSelection.classList.remove('active');
+            gameScene.classList.add('active');
+            
+            // ตั้งค่าพนักงานตามเพศที่เลือก
+            employeeImg.src = gameData[selectedGender].image;
+            employeeName.textContent = gameData[selectedGender].name;
+            
+            // เริ่มเล่นเพลงพื้นหลัง
+            backgroundMusicElement.volume = 0.3;
+            backgroundMusicElement.play();
+            
+            // เริ่มเกม
+            loadScene(0);
+        });
+
+        // โหลดฉากปัจจุบัน
+        function loadScene(sceneIndex) {
+            currentScene = sceneIndex;
+            
+            if (currentScene >= conversationData.length) {
+                endGame();
+                return;
+            }
+            
+            const scene = conversationData[sceneIndex];
+            
+            // แสดงบทสนทนาของลูกค้า
+            customerDialogue.textContent = scene.customer;
+            employeeDialogue.textContent = "";
+            
+            // สร้างตัวเลือกบทสนทนา
+            dialogueOptions.innerHTML = "";
+            scene.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option.text;
+                optionElement.addEventListener('click', function() {
+                    selectOption(option.score, option.text);
+                });
+                dialogueOptions.appendChild(optionElement);
+            });
+        }
+
+        // เลือกตัวเลือกบทสนทนา
+        function selectOption(optionScore, optionText) {
+            // อัพเดทคะแนน
+            score += optionScore;
+            currentScoreDisplay.textContent = score;
+            
+            // แสดงข้อความที่พนักงานเลือก
+            employeeDialogue.textContent = optionText;
+            
+            // ลบตัวเลือกทั้งหมด
+            dialogueOptions.innerHTML = "";
+            
+            // ไปยังฉากถัดไปหลังจากหน่วงเวลา
+            setTimeout(() => {
+                loadScene(currentScene + 1);
+            }, 2000);
+        }
+
+        // จบเกม
+        function endGame() {
+            gameScene.classList.remove('active');
+            resultScene.classList.add('active');
+            
+            // แสดงคะแนนสุดท้าย
+            finalScoreDisplay.textContent = score;
+            
+            // ให้คำติชมตามคะแนน
+            let feedback = "";
+            if (score >= 20) {
+                feedback = "ยอดเยี่ยมมาก! คุณมีทักษะการเป็นที่ปรึกษาที่ดีมาก รู้จักสร้างความสัมพันธ์กับลูกค้าและนำเสนอผลิตภัณฑ์ได้อย่างเหมาะสม ไม่ยัดเยียดและทำให้ลูกค้ารู้สึกสบายใจ";
+            } else if (score >= 15) {
+                feedback = "ดีมาก! คุณมีทักษะการสนทนาที่ดี แต่ยังสามารถพัฒนาการฟังและตอบคำถามลูกค้าให้ลึกซึ้งมากขึ้นได้";
+            } else if (score >= 10) {
+                feedback = "พอใช้! คุณสื่อสารได้แต่ยังขาดเทคนิคการสร้างความสัมพันธ์และนำเสนอที่ดึงดูดใจลูกค้า ลองฝึกฟังลูกค้าให้มากขึ้นและตอบสนองความต้องการของพวกเขาอย่างแท้จริง";
+            } else {
+                feedback = "ต้องปรับปรุง! การสนทนาของคุณยังยัดเยียดและไม่ตอบโจทย์ความต้องการของลูกค้า ลองฝึกทักษะการฟังและการตั้งคำถามเพื่อทำความเข้าใจลูกค้ามากขึ้น";
+            }
+            
+            resultFeedback.textContent = feedback;
+        }
+
+        // รีเซ็ตเกม
+        restartGameBtn.addEventListener('click', function() {
+            resultScene.classList.remove('active');
+            genderSelection.classList.add('active');
+            
+            // รีเซ็ตตัวแปรเกม
+            currentScene = 0;
+            score = 0;
+            currentScoreDisplay.textContent = score;
+            selectedGender = null;
+            
+            // รีเซ็ตการเลือกเพศ
+            document.querySelectorAll('.gender-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            startGameBtn.disabled = true;
+        });
+
+        // ควบคุมเสียง
+        let isMusicPlaying = true;
+        musicControl.addEventListener('click', function() {
+            if (isMusicPlaying) {
+                backgroundMusicElement.pause();
+                musicControl.innerHTML = '<span>🔇</span> เพลงพื้นหลัง';
+            } else {
+                backgroundMusicElement.play();
+                musicControl.innerHTML = '<span>🔊</span> เพลงพื้นหลัง';
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+    </script>
+</body>
+</html>
