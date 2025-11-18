@@ -45,6 +45,7 @@
             display: flex;
             flex-direction: column;
             padding: 20px;
+            min-height: 70vh;
         }
         
         .scene {
@@ -61,7 +62,7 @@
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
-            min-height: 250px;
+            min-height: 200px;
         }
         
         .character {
@@ -74,8 +75,8 @@
         }
         
         .character-img {
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
             margin: 0 auto 15px;
@@ -149,6 +150,7 @@
             font-size: 18px;
             margin: 20px 0;
             line-height: 1.6;
+            text-align: left;
         }
         
         .btn {
@@ -169,37 +171,46 @@
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
         }
         
-        .gender-selection {
+        .btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .gender-selection, .customer-selection, .situation-selection {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin: 20px 0;
+            flex-wrap: wrap;
         }
         
-        .gender-option {
+        .selection-option {
             text-align: center;
             cursor: pointer;
             padding: 15px;
             border-radius: 10px;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            width: 140px;
         }
         
-        .gender-option:hover, .gender-option.selected {
+        .selection-option:hover, .selection-option.selected {
             border-color: #2a4ab0;
             background-color: #f0f4ff;
         }
         
-        .gender-img {
-            width: 120px;
-            height: 120px;
+        .selection-img {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 10px;
             border: 3px solid #adb5bd;
         }
         
-        .selected .gender-img {
+        .selected .selection-img {
             border-color: #2a4ab0;
         }
         
@@ -217,6 +228,47 @@
             gap: 8px;
         }
         
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #1a3a8f, #2a4ab0);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .skill-analysis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .skill-category {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .skill-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1a3a8f;
+        }
+        
+        .skill-description {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
         @media (max-width: 768px) {
             .characters {
                 flex-direction: column;
@@ -229,8 +281,21 @@
             }
             
             .character-img {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .skill-analysis {
+                grid-template-columns: 1fr;
+            }
+            
+            .selection-option {
                 width: 120px;
-                height: 120px;
+            }
+            
+            .selection-img {
+                width: 80px;
+                height: 80px;
             }
         }
     </style>
@@ -250,13 +315,74 @@
                     <p>เลือกเพศของคุณเพื่อกำหนดตัวละครและบทสนทนาให้เหมาะสม</p>
                     
                     <div class="gender-selection">
-                        <div class="gender-option" data-gender="male">
-                            <img src="https://i.pravatar.cc/150?img=12" alt="พนักงานชาย" class="gender-img">
+                        <div class="selection-option" data-gender="male">
+                            <img src="https://i.pravatar.cc/150?img=12" alt="พนักงานชาย" class="selection-img">
                             <p>พนักงานชาย</p>
                         </div>
-                        <div class="gender-option" data-gender="female">
-                            <img src="https://i.pravatar.cc/150?img=33" alt="พนักงานหญิง" class="gender-img">
+                        <div class="selection-option" data-gender="female">
+                            <img src="https://i.pravatar.cc/150?img=33" alt="พนักงานหญิง" class="selection-img">
                             <p>พนักงานหญิง</p>
+                        </div>
+                    </div>
+                    
+                    <button id="next-to-customer" class="btn" disabled>ต่อไป</button>
+                </div>
+            </div>
+            
+            <!-- หน้าเลือกจริตลูกค้า -->
+            <div id="customer-selection" class="scene">
+                <div class="dialogue-box">
+                    <h2>เลือกจริตของลูกค้า</h2>
+                    <p>เลือกจริตของลูกค้าที่คุณต้องการฝึกสนทนาด้วย</p>
+                    
+                    <div class="customer-selection">
+                        <div class="selection-option" data-customer="achiever">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="เป้าประสงค์" class="selection-img">
+                            <p>เป้าประสงค์ (ชาย)</p>
+                            <small>มุ่งเน้นผลลัพธ์</small>
+                        </div>
+                        <div class="selection-option" data-customer="celebrity">
+                            <img src="https://i.pravatar.cc/150?img=61" alt="หนึ่งดารา" class="selection-img">
+                            <p>หนึ่งดารา (หญิง)</p>
+                            <small>ชอบการยอมรับ</small>
+                        </div>
+                        <div class="selection-option" data-customer="careful">
+                            <img src="https://i.pravatar.cc/150?img=38" alt="ถนอมจิตร" class="selection-img">
+                            <p>ถนอมจิตร (หญิง)</p>
+                            <small>ระมัดระวัง</small>
+                        </div>
+                        <div class="selection-option" data-customer="analytical">
+                            <img src="https://i.pravatar.cc/150?img=8" alt="คิดคำนวณ" class="selection-img">
+                            <p>คิดคำนวณ (ชาย)</p>
+                            <small>ใช้ข้อมูลตัดสินใจ</small>
+                        </div>
+                    </div>
+                    
+                    <button id="next-to-situation" class="btn" disabled>ต่อไป</button>
+                </div>
+            </div>
+            
+            <!-- หน้าเลือกสถานการณ์ -->
+            <div id="situation-selection" class="scene">
+                <div class="dialogue-box">
+                    <h2>เลือกสถานการณ์</h2>
+                    <p>เลือกสถานการณ์จำลองที่คุณต้องการฝึกฝน</p>
+                    
+                    <div class="situation-selection">
+                        <div class="selection-option" data-situation="branch">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="ที่สาขาธนาคาร" class="selection-img">
+                            <p>ที่สาขาธนาคาร</p>
+                            <small>ลูกค้าเดินเข้ามาเอง</small>
+                        </div>
+                        <div class="selection-option" data-situation="appointment">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3596/3596181.png" alt="นัดหมายล่วงหน้า" class="selection-img">
+                            <p>นัดหมายล่วงหน้า</p>
+                            <small>ลูกค้ามีนัด</small>
+                        </div>
+                        <div class="selection-option" data-situation="event">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3138/3138805.png" alt="งานอีเวนต์" class="selection-img">
+                            <p>งานอีเวนต์</p>
+                            <small>พบในงานแสดงสินค้า</small>
                         </div>
                     </div>
                     
@@ -270,6 +396,10 @@
                     คะแนน: <span id="current-score">0</span>
                 </div>
                 
+                <div class="progress-bar">
+                    <div class="progress" id="conversation-progress"></div>
+                </div>
+                
                 <div class="characters">
                     <div class="character">
                         <img id="employee-img" src="" alt="พนักงานธนาคาร" class="character-img">
@@ -277,8 +407,8 @@
                     </div>
                     
                     <div class="character">
-                        <img src="https://i.pravatar.cc/150?img=8" alt="ลูกค้า" class="character-img">
-                        <h3>คุณสมชาย (ลูกค้า)</h3>
+                        <img id="customer-img" src="" alt="ลูกค้า" class="character-img">
+                        <h3 id="customer-name">ลูกค้า</h3>
                     </div>
                 </div>
                 
@@ -309,6 +439,11 @@
                         <!-- คำติชมจะแสดงที่นี่ -->
                     </div>
                     
+                    <h3 style="margin-top: 20px; color: #1a3a8f;">การวิเคราะห์ทักษะของคุณ</h3>
+                    <div class="skill-analysis" id="skill-analysis">
+                        <!-- การวิเคราะห์ทักษะจะแสดงที่นี่ -->
+                    </div>
+                    
                     <button id="restart-game" class="btn">เล่นอีกครั้ง</button>
                 </div>
             </div>
@@ -326,115 +461,445 @@
     <script>
         // ข้อมูลเกม
         const gameData = {
-            male: {
-                name: "คุณธนวัฒน์",
-                image: "https://i.pravatar.cc/150?img=12",
-                dialogues: {
-                    greeting: ["สวัสดีครับ ผมธนวัฒน์ ยินดีให้บริการครับ", "สวัสดีครับ มีอะไรให้ผมช่วยเหลือไหมครับ"],
-                    askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างครับ", "คุณสมชายสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมครับ"],
-                    explainInsurance: ["ประกันชีวิตแบบนี้ช่วยลดหย่อนภาษีได้และยังเป็นการออมทรัพย์อีกทางหนึ่งครับ", "ผมขอแนะนำประกันที่เหมาะกับคุณ ซึ่งจะช่วยลดหย่อนภาษีและสร้างความมั่นคงให้อนาคตครับ"],
-                    handleObjection: ["เข้าใจดีครับ ลองพิจารณาดูแบบไม่กดดันนะครับ", "ไม่เป็นไรครับ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมผมยินดีช่วยเหลือเสมอครับ"]
+            // ข้อมูลพนักงาน
+            employees: {
+                male: {
+                    name: "คุณธนวัฒน์",
+                    image: "https://i.pravatar.cc/150?img=12",
+                    dialogues: {
+                        greeting: ["สวัสดีครับ ผมธนวัฒน์ ยินดีให้บริการครับ", "สวัสดีครับ มีอะไรให้ผมช่วยเหลือไหมครับ"],
+                        askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างครับ", "คุณสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมครับ"],
+                        explainInsurance: ["ประกันชีวิตแบบนี้ช่วยลดหย่อนภาษีได้และยังเป็นการออมทรัพย์อีกทางหนึ่งครับ", "ผมขอแนะนำประกันที่เหมาะกับคุณ ซึ่งจะช่วยลดหย่อนภาษีและสร้างความมั่นคงให้อนาคตครับ"],
+                        handleObjection: ["เข้าใจดีครับ ลองพิจารณาดูแบบไม่กดดันนะครับ", "ไม่เป็นไรครับ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมผมยินดีช่วยเหลือเสมอครับ"]
+                    }
+                },
+                female: {
+                    name: "คุณสาวิตรี",
+                    image: "https://i.pravatar.cc/150?img=33",
+                    dialogues: {
+                        greeting: ["สวัสดีค่ะ ดิฉันสาวิตรี ยินดีให้บริการค่ะ", "สวัสดีค่ะ มีอะไรให้ดิฉันช่วยเหลือไหมคะ"],
+                        askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างคะ", "คุณสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมคะ"],
+                        explainInsurance: ["ประกันชีวิตแบบนี้ช่วยลดหย่อนภาษีได้และยังเป็นการออมทรัพย์อีกทางหนึ่งค่ะ", "ดิฉันขอแนะนำประกันที่เหมาะกับคุณ ซึ่งจะช่วยลดหย่อนภาษีและสร้างความมั่นคงให้อนาคตค่ะ"],
+                        handleObjection: ["เข้าใจดีค่ะ ลองพิจารณาดูแบบไม่กดดันนะคะ", "ไม่เป็นไรค่ะ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมดิฉันยินดีช่วยเหลือเสมอค่ะ"]
+                    }
                 }
             },
-            female: {
-                name: "คุณสาวิตรี",
-                image: "https://i.pravatar.cc/150?img=33",
-                dialogues: {
-                    greeting: ["สวัสดีค่ะ ดิฉันสาวิตรี ยินดีให้บริการค่ะ", "สวัสดีค่ะ มีอะไรให้ดิฉันช่วยเหลือไหมคะ"],
-                    askNeeds: ["ช่วงสิ้นปีนี้ มีแผนการจัดการภาษีอะไรบ้างคะ", "คุณสมชายสนใจวางแผนภาษีสำหรับสิ้นปีนี้ไหมคะ"],
-                    explainInsurance: ["ประกันชีวิตแบบนี้ช่วยลดหย่อนภาษีได้และยังเป็นการออมทรัพย์อีกทางหนึ่งค่ะ", "ดิฉันขอแนะนำประกันที่เหมาะกับคุณ ซึ่งจะช่วยลดหย่อนภาษีและสร้างความมั่นคงให้อนาคตค่ะ"],
-                    handleObjection: ["เข้าใจดีค่ะ ลองพิจารณาดูแบบไม่กดดันนะคะ", "ไม่เป็นไรค่ะ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมดิฉันยินดีช่วยเหลือเสมอค่ะ"]
+            
+            // ข้อมูลลูกค้าตามจริต
+            customers: {
+                achiever: {
+                    name: "คุณวิศวะ",
+                    image: "https://i.pravatar.cc/150?img=5",
+                    type: "เป้าประสงค์",
+                    description: "มุ่งเน้นผลลัพธ์ ชอบความชัดเจน รวดเร็ว และตรงประเด็น",
+                    dialogues: {
+                        branch: [
+                            "ผมมีเวลาจำกัด ช่วยสรุปแผนประกันที่ช่วยลดหย่อนภาษีได้ดีที่สุดให้ผมที",
+                            "ผมต้องการรู้ว่าประกันนี้ช่วยผมประหยัดภาษีได้จริงเท่าไหร่ และมีผลตอบแทนอย่างไรบ้าง",
+                            "ถ้าผมตัดสินใจตอนนี้ จะได้เริ่มลดหย่อนภาษีปีนี้เลยใช่ไหม",
+                            "แผนนี้แตกต่างจากแผนอื่นอย่างไร และทำไมผมควรเลือกแผนนี้",
+                            "โอเค ผมเข้าใจแล้ว ขอเอกสารประกอบการตัดสินใจด้วย"
+                        ],
+                        appointment: [
+                            "ผมตั้งใจมาพูดเรื่องประกันลดหย่อนภาษีโดยเฉพาะ ช่วยอธิบายข้อดีให้ผมฟังที",
+                            "ผมต้องการทราบรายละเอียดเกี่ยวกับผลตอบแทนและความคุ้มครองอย่างชัดเจน",
+                            "แผนนี้ตอบโจทย์การลดหย่อนภาษีของผมได้จริงหรือไม่ เปรียบเทียบกับทางเลือกอื่นอย่างไร",
+                            "ถ้าผมลงทะเบียนวันนี้ กระบวนการเป็นอย่างไร ใช้เวลานานแค่ไหน",
+                            "ขอบคุณข้อมูล ผมจะนำไปพิจารณาและติดต่อกลับ"
+                        ],
+                        event: [
+                            "ผมสนใจประกันลดหย่อนภาษี ช่วยสรุปประเด็นสำคัญให้ฟังหน่อย",
+                            "แผนนี้ช่วยผมประหยัดภาษีได้จริงเท่าไหร่ และมีเงื่อนไขอะไรบ้าง",
+                            "มีแผนอื่นที่เหมาะกับผมมากกว่านี้ไหม เพราะอะไร",
+                            "ถ้าผมตัดสินใจตอนนี้ จะได้สิทธิพิเศษอะไรเพิ่มเติมบ้าง",
+                            "ขอบคุณข้อมูล ผมขอโบรชัวร์ไว้พิจารณาดูนะ"
+                        ]
+                    }
+                },
+                celebrity: {
+                    name: "คุณดาว",
+                    image: "https://i.pravatar.cc/150?img=61",
+                    type: "หนึ่งดารา",
+                    description: "ชอบการยอมรับ ความพิเศษ และความสะดวกสบาย",
+                    dialogues: {
+                        branch: [
+                            "ฉันได้ยินมาว่ามีประกันลดหย่อนภาษีแบบพิเศษสำหรับลูกค้าพิเศษอย่างฉันใช่ไหม",
+                            "เพื่อนฉันหลายคนทำประกันลดหย่อนภาษีแล้ว เขาบอกว่าดีมากเลย",
+                            "แผนนี้มีอะไรพิเศษกว่าประกันทั่วไปบ้าง ฉันชอบสิ่งที่ไม่เหมือนใคร",
+                            "ถ้าฉันทำประกันนี้ ฉันจะได้รับการบริการแบบพิเศษอะไรบ้าง",
+                            "แผนนี้ดูน่าสนใจ ฉันจะบอกต่อเพื่อนๆ ได้ยังไงบ้าง"
+                        ],
+                        appointment: [
+                            "ฉันอยากได้แผนประกันลดหย่อนภาษีที่เหมาะกับไลฟ์สไตล์ของฉันโดยเฉพาะ",
+                            "ฉันชอบแผนที่ให้ความสำคัญกับลูกค้าและมีบริการเสริมที่น่าสนใจ",
+                            "ประกันนี้มีโปรโมชันพิเศษสำหรับลูกค้าอย่างฉันไหม",
+                            "ฉันต้องการแผนที่ทำให้ฉันรู้สึกพิเศษและได้รับการดูแลเป็นอย่างดี",
+                            "ขอบคุณสำหรับข้อมูล ฉันชอบแผนนี้มาก จะบอกเพื่อนๆ ให้มาร่วมด้วย"
+                        ],
+                        event: [
+                            "แผนประกันลดหย่อนภาษีนี้มีอะไรพิเศษสำหรับลูกค้าอย่างฉันบ้าง",
+                            "ฉันเห็นว่ามีหลายคนสนใจแผนนี้ มันดีจริงๆ เหรอ",
+                            "ถ้าฉันทำประกันนี้ ฉันจะได้รับการยอมรับอย่างไรบ้างในวงสังคม",
+                            "แผนนี้มีสิทธิพิเศษอะไรที่ทำให้ฉันแตกต่างจากคนอื่น",
+                            "แผนนี้ดูดี ฉันจะนำไปปรึกษาคุณสามีก่อนนะ"
+                        ]
+                    }
+                },
+                careful: {
+                    name: "คุณสายใจ",
+                    image: "https://i.pravatar.cc/150?img=38",
+                    type: "ถนอมจิตร",
+                    description: "ระมัดระวัง ต้องการความปลอดภัย และข้อมูลที่ครบถ้วน",
+                    dialogues: {
+                        branch: [
+                            "ดิฉันอยากทราบข้อมูลเกี่ยวกับประกันลดหย่อนภาษีแบบละเอียดหน่อยค่ะ",
+                            "ดิฉันกังวลเรื่องความเสี่ยง ถ้าจ่ายเบี้ยไปแล้วจะได้ประโยชน์คุ้มค่าไหม",
+                            "มีลูกค้าคนอื่นที่ใช้แผนนี้แล้วประสบความสำเร็จบ้างไหมคะ",
+                            "ดิฉันต้องการทราบเงื่อนไขทั้งหมดอย่างชัดเจนก่อนตัดสินใจ",
+                            "ขอบคุณสำหรับข้อมูล ดิฉันต้องกลับไปปรึกษาครอบครัวก่อนค่ะ"
+                        ],
+                        appointment: [
+                            "ดิฉันสนใจประกันลดหย่อนภาษี แต่ต้องการทราบรายละเอียดให้แน่ใจก่อน",
+                            "แผนนี้มีความเสี่ยงอะไรบ้าง และมีวิธีจัดการความเสี่ยงเหล่านั้นอย่างไร",
+                            "ดิฉันเคยได้ยินมาว่าประกันบางแผนมีข้อจำกัดมาก คุณช่วยอธิบายให้ชัดเจนหน่อย",
+                            "ดิฉันต้องการเห็นตัวอย่างกรณีศึกษาและผลลัพธ์ที่เกิดขึ้นจริง",
+                            "ขอบคุณสำหรับความเข้าใจ ดิฉันจะติดต่อกลับเมื่อตัดสินใจได้ค่ะ"
+                        ],
+                        event: [
+                            "ดิฉันสนใจประกันลดหย่อนภาษี แต่ยังไม่แน่ใจว่าควรเลือกแผนไหน",
+                            "แผนนี้ปลอดภัยไหมคะ และมีการรับประกันอย่างไรบ้าง",
+                            "ดิฉันต้องการทราบว่าถ้ามีปัญหาจะติดต่อใครได้บ้าง และกระบวนการเป็นอย่างไร",
+                            "มีเอกสารอ้างอิงหรือการรับรองจากหน่วยงานที่น่าเชื่อถือไหมคะ",
+                            "ขอบคุณสำหรับข้อมูล ดิฉันขอเวลาไปศึกษารายละเอียดเพิ่มเติมนะคะ"
+                        ]
+                    }
+                },
+                analytical: {
+                    name: "คุณวิทย์",
+                    image: "https://i.pravatar.cc/150?img=8",
+                    type: "คิดคำนวณ",
+                    description: "ใช้ข้อมูลและตรรกะในการตัดสินใจ ชอบรายละเอียดและตัวเลข",
+                    dialogues: {
+                        branch: [
+                            "ผมต้องการข้อมูลเชิงลึกเกี่ยวกับประกันลดหย่อนภาษี ทั้งในแง่ของผลตอบแทนและความคุ้มครอง",
+                            "ช่วยแสดงตัวเลขและกราฟเปรียบเทียบแผนนี้กับทางเลือกอื่นให้ดูหน่อย",
+                            "อัตราผลตอบแทนคำนวณอย่างไร และมีปัจจัยอะไรบ้างที่ส่งผลต่อผลตอบแทน",
+                            "มีข้อมูลทางสถิติเกี่ยวกับความสำเร็จของแผนนี้กับลูกค้ากลุ่มต่างๆ ไหม",
+                            "ขอบคุณสำหรับข้อมูล ผมจะนำไปวิเคราะห์เพิ่มเติมก่อนตัดสินใจ"
+                        ],
+                        appointment: [
+                            "ผมมาพบคุณเพื่อขอข้อมูลเชิงเทคนิคเกี่ยวกับประกันลดหย่อนภาษี",
+                            "ช่วยอธิบายกลไกการลดหย่อนภาษีและผลตอบแทนในรูปแบบตัวเลขให้ผมฟังที",
+                            "แผนนี้มีจุดเด่นเชิงเปรียบเทียบกับผลิตภัณฑ์ทางการเงินอื่นอย่างไร",
+                            "ผมต้องการเห็นแบบจำลองทางการเงินที่แสดงผลลัพธ์ในสถานการณ์ต่างๆ",
+                            "ข้อมูลนี้มีประโยชน์มาก ผมจะนำไปวิเคราะห์ต่อและติดต่อกลับ"
+                        ],
+                        event: [
+                            "ผมสนใจประกันลดหย่อนภาษี ช่วยให้ข้อมูลเชิงลึกและตัวเลขที่เกี่ยวข้องหน่อย",
+                            "แผนนี้มีอัตราส่วนผลตอบแทนต่อความเสี่ยงอยู่ในระดับใด",
+                            "ช่วยเปรียบเทียบแผนนี้กับทางเลือกอื่นในตลาดในแง่ของประสิทธิภาพ",
+                            "มีงานวิจัยหรือข้อมูลอ้างอิงทางวิชาการสนับสนุนแผนนี้ไหม",
+                            "ขอบคุณสำหรับข้อมูล ผมขอรายละเอียดเพิ่มเติมเพื่อนำไปศึกษาต่อ"
+                        ]
+                    }
+                }
+            },
+            
+            // ข้อมูลสถานการณ์
+            situations: {
+                branch: {
+                    name: "ที่สาขาธนาคาร",
+                    description: "ลูกค้าเดินเข้ามาที่สาขาเพื่อสอบถามเกี่ยวกับผลิตภัณฑ์ลดหย่อนภาษี"
+                },
+                appointment: {
+                    name: "นัดหมายล่วงหน้า",
+                    description: "ลูกค้ามีนัดล่วงหน้าเพื่อพูดคุยเกี่ยวกับแผนการลดหย่อนภาษี"
+                },
+                event: {
+                    name: "งานอีเวนต์",
+                    description: "พบลูกค้าในงานแสดงสินค้าหรืองานอีเวนต์ของธนาคาร"
                 }
             }
         };
 
-        // ข้อมูลบทสนทนา
-        const conversationData = [
-            {
-                customer: "สวัสดีครับ ผมมาสอบถามเกี่ยวกับการลดหย่อนภาษีสิ้นปีน่ะครับ",
-                options: [
-                    { text: "สวัสดีครับ/ค่ะ มีเอกสารอะไรให้ผม/ดิฉันช่วยดูบ้างไหมครับ/คะ", score: 3 },
-                    { text: "สวัสดีครับ/ค่ะ ยินดีให้บริการครับ/ค่ะ ลดหย่อนภาษีใช่ไหมครับ/ค่ะ?", score: 5 },
-                    { text: "อ่า..ใช่ครับ/ค่ะ เรามีประกันลดหย่อนภาษีอยู่ อยากรู้รายละเอียดไหมครับ/ค่ะ?", score: 2 }
-                ]
-            },
-            {
-                customer: "ผมได้ยินมาว่ามีประกันชีวิตที่ช่วยลดหย่อนภาษีได้ ไม่ทราบว่ามีแบบไหนบ้าง",
-                options: [
-                    { text: "ผม/ดิฉันขอแนะนำประกันแบบสะสมทรัพย์ครับ/ค่ะ ซึ่งนอกจากคุ้มครองชีวิตแล้วยังได้เงินคืนและลดหย่อนภาษีได้", score: 5 },
-                    { text: "เรามีหลายแบบเลยครับ/ค่ะ แต่ที่นิยมคือแบบคุ้มครองชีวิตและแบบสะสมทรัพย์", score: 3 },
-                    { text: "ประกันชีวิตลดหย่อนภาษีได้นะครับ/ค่ะ ต้องการแบบไหนล่ะครับ/คะ?", score: 1 }
-                ]
-            },
-            {
-                customer: "แล้วแบบสะสมทรัพย์นี่ต้องจ่ายเบี้ยประมาณเท่าไหร่ และลดหย่อนภาษีได้เท่าไร",
-                options: [
-                    { text: "เบี้ยประกันขึ้นอยู่กับอายุและความคุ้มครองที่คุณต้องการครับ/ค่ะ ถ้าให้ดีผม/ดิฉันต้องขอข้อมูลเพิ่มเติมนิดหนึ่ง", score: 5 },
-                    { text: "เริ่มต้นที่เดือนละ 1,000 บาทครับ/ค่ะ ลดหย่อนภาษีได้ตามจำนวนเบี้ยที่จ่ายจริง", score: 3 },
-                    { text: "ไม่ต้องกังวลเรื่องราคาครับ/ค่ะ เรามีหลายแผนให้เลือก", score: 2 }
-                ]
-            },
-            {
-                customer: "ผมยังไม่แน่ใจนะ เพราะตอนนี้ภาระทางการเงินก็มีอยู่",
-                options: [
-                    { text: "เข้าใจดีครับ/ค่ะ ลองพิจารณาดูแบบไม่กดดันนะครับ/ค่ะ ถ้าสนใจเมื่อไหร่ติดต่อมาได้ตลอดเวลา", score: 5 },
-                    { text: "ไม่เป็นไรครับ/ค่ะ ค่อยๆ ตัดสินใจ ถ้ามีคำถามเพิ่มเติมผม/ดิฉันยินดีช่วยเหลือเสมอครับ/ค่ะ", score: 4 },
-                    { text: "แต่ถ้าคุณไม่ทำตอนนี้ อาจจะเสียโอกาสในการลดหย่อนภาษีปีนี้นะครับ/คะ", score: 1 }
-                ]
-            },
-            {
-                customer: "ขอบคุณสำหรับข้อมูลครับ ผมจะกลับไปคิดดูก่อน",
-                options: [
-                    { text: "ไม่เป็นไรครับ/ค่ะ ถ้ามีคำถามสามารถติดต่อมาได้ตลอดเวลานะครับ/ค่ะ", score: 5 },
-                    { text: "โอเคครับ/ค่ะ แล้วค่อยมาต่อใหม่", score: 3 },
-                    { text: "คุณควรตัดสินใจเร็วๆ นะครับ/คะ เพราะใกล้สิ้นปีแล้ว", score: 1 }
-                ]
-            }
-        ];
+        // ข้อมูลบทสนทนาและตัวเลือก
+        const conversationData = {
+            // ตัวเลือกสำหรับจริต "เป้าประสงค์"
+            achiever: [
+                {
+                    customer: "ผมมีเวลาจำกัด ช่วยสรุปแผนประกันที่ช่วยลดหย่อนภาษีได้ดีที่สุดให้ผมที",
+                    options: [
+                        { 
+                            text: "แผนนี้ช่วยลดหย่อนภาษีได้สูงสุด 100,000 บาทต่อปี และมีผลตอบแทนเฉลี่ย 3-5% ต่อปี", 
+                            scores: { clarity: 4, relevance: 5, pressure: 2, relationship: 3 },
+                            feedback: "ตอบโจทย์ความต้องการได้ดี ให้ข้อมูลชัดเจนและตรงประเด็น"
+                        },
+                        { 
+                            text: "ประกันลดหย่อนภาษีมีหลายแผน แต่แผนนี้เป็นที่นิยมที่สุดเพราะให้ผลตอบแทนดี", 
+                            scores: { clarity: 3, relevance: 4, pressure: 3, relationship: 3 },
+                            feedback: "ให้ข้อมูลทั่วไปแต่ไม่เฉพาะเจาะจงพอสำหรับลูกค้าที่ต้องการความชัดเจน"
+                        },
+                        { 
+                            text: "ผมแนะนำแผนนี้เพราะเหมาะกับคนที่มีเวลาจำกัดเช่นคุณ ลงทะเบียนวันนี้พรุ่งนี้เริ่มลดหย่อนภาษีได้เลย", 
+                            scores: { clarity: 4, relevance: 4, pressure: 5, relationship: 2 },
+                            feedback: "เร่งรีบเกินไป อาจทำให้ลูกค้ารู้สึกถูกกดดัน"
+                        }
+                    ]
+                },
+                {
+                    customer: "ผมต้องการรู้ว่าประกันนี้ช่วยผมประหยัดภาษีได้จริงเท่าไหร่ และมีผลตอบแทนอย่างไรบ้าง",
+                    options: [
+                        { 
+                            text: "จากข้อมูลของคุณ ประมาณว่าช่วยประหยัดภาษีได้ 10-15% ของเบี้ยประกัน และมีผลตอบแทนจากกองทุนรวมที่ผูกไว้", 
+                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
+                            feedback: "ให้ข้อมูลที่เป็นประโยชน์และเฉพาะเจาะจง แสดงความเข้าใจความต้องการลูกค้า"
+                        },
+                        { 
+                            text: "ประกันช่วยลดหย่อนภาษีได้แน่นอน และยังได้ผลตอบแทนด้วย แต่รายละเอียดขึ้นอยู่กับหลายปัจจัย", 
+                            scores: { clarity: 2, relevance: 3, pressure: 2, relationship: 3 },
+                            feedback: "ข้อมูลคลุมเครือ ไม่เฉพาะเจาะจงพอสำหรับลูกค้าประเภทนี้"
+                        },
+                        { 
+                            text: "คุณจะประหยัดภาษีได้มากแน่นอน และยังได้ผลตอบแทนที่ดี ควรตัดสินใจเร็วๆ เพราะโปรโมชันกำลังจะหมด", 
+                            scores: { clarity: 3, relevance: 4, pressure: 5, relationship: 2 },
+                            feedback: "ใช้เทคนิคการขายแบบเร่งด่วน ซึ่งไม่เหมาะกับลูกค้าประเภทนี้"
+                        }
+                    ]
+                }
+            ],
+            
+            // ตัวเลือกสำหรับจริต "หนึ่งดารา"
+            celebrity: [
+                {
+                    customer: "ฉันได้ยินมาว่ามีประกันลดหย่อนภาษีแบบพิเศษสำหรับลูกค้าพิเศษอย่างฉันใช่ไหม",
+                    options: [
+                        { 
+                            text: "ใช่แล้วค่ะ เรามีแผนพิเศษสำหรับลูกค้าคุณภาพเช่นคุณโดยเฉพาะ ซึ่งมีสิทธิพิเศษเพิ่มเติม", 
+                            scores: { clarity: 4, relevance: 5, pressure: 2, relationship: 5 },
+                            feedback: "ตอบสนองความต้องการในการเป็นคนพิเศษได้ดี สร้างความสัมพันธ์ที่ดี"
+                        },
+                        { 
+                            text: "ประกันลดหย่อนภาษีมีให้เลือกหลายแผน คุณสมบัติผู้ซื้อก็คล้ายๆ กัน", 
+                            scores: { clarity: 3, relevance: 2, pressure: 2, relationship: 2 },
+                            feedback: "ไม่ได้ตอบสนองความต้องการในการเป็นคนพิเศษของลูกค้า"
+                        },
+                        { 
+                            text: "แผนนี้ดีมากและเหมาะกับคุณ ลงทะเบียนวันนี้เพื่อรับสิทธิพิเศษก่อนใคร", 
+                            scores: { clarity: 3, relevance: 4, pressure: 4, relationship: 3 },
+                            feedback: "พยายามสร้างความพิเศษแต่ยังเร่งรัดเกินไป"
+                        }
+                    ]
+                },
+                {
+                    customer: "แผนนี้มีอะไรพิเศษกว่าประกันทั่วไปบ้าง ฉันชอบสิ่งที่ไม่เหมือนใคร",
+                    options: [
+                        { 
+                            text: "แผนนี้มีบริการให้คำปรึกษาการเงินส่วนตัว พร้อมรับประกันสุขภาพเพิ่มเติม และเช็คสุขภาพประจำปีฟรี", 
+                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
+                            feedback: "เน้นจุดเด่นที่ตอบโจทย์ลูกค้าได้ดี ให้ข้อมูลชัดเจน"
+                        },
+                        { 
+                            text: "ก็คล้ายกับประกันทั่วไป แต่มีบางจุดที่แตกต่างกันเล็กน้อย", 
+                            scores: { clarity: 2, relevance: 2, pressure: 2, relationship: 2 },
+                            feedback: "ไม่ได้เน้นความพิเศษซึ่งเป็นสิ่งที่ลูกค้าต้องการ"
+                        },
+                        { 
+                            text: "แผนนี้พิเศษมาก ลงทะเบียนวันนี้เพื่อรับของสมนาคุณพิเศษด้วย", 
+                            scores: { clarity: 3, relevance: 4, pressure: 4, relationship: 3 },
+                            feedback: "พยายามสร้างความพิเศษแต่เน้นการขายมากเกินไป"
+                        }
+                    ]
+                }
+            ],
+            
+            // ตัวเลือกสำหรับจริต "ถนอมจิตร"
+            careful: [
+                {
+                    customer: "ดิฉันอยากทราบข้อมูลเกี่ยวกับประกันลดหย่อนภาษีแบบละเอียดหน่อยค่ะ",
+                    options: [
+                        { 
+                            text: "แน่นอนค่ะ ผมมีเอกสารข้อมูลครบถ้วนพร้อมตัวอย่างกรณีศึกษาให้คุณพิจารณาอย่างรอบคอบ", 
+                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
+                            feedback: "ตอบสนองความต้องการข้อมูลอย่างละเอียดได้ดี ไม่เร่งรัด"
+                        },
+                        { 
+                            text: "ประกันลดหย่อนภาษีมีหลายแบบ แต่หลักการคล้ายกัน คือช่วยลดหย่อนภาษีได้", 
+                            scores: { clarity: 2, relevance: 3, pressure: 2, relationship: 3 },
+                            feedback: "ให้ข้อมูลทั่วไป ไม่ละเอียดพอสำหรับลูกค้าประเภทนี้"
+                        },
+                        { 
+                            text: "คุณไม่ต้องกังวล ประกันนี้ดีแน่นอน หลายคนใช้แล้วประทับใจ", 
+                            scores: { clarity: 2, relevance: 2, pressure: 3, relationship: 2 },
+                            feedback: "ไม่ได้ให้ข้อมูลที่ต้องการ และดูเหมือนพยายามโน้มน้าวมากเกินไป"
+                        }
+                    ]
+                },
+                {
+                    customer: "ดิฉันกังวลเรื่องความเสี่ยง ถ้าจ่ายเบี้ยไปแล้วจะได้ประโยชน์คุ้มค่าไหม",
+                    options: [
+                        { 
+                            text: "เข้าใจความกังวลของคุณครับ ประกันนี้มีการลงทุนในกองทุนรวมคุณภาพและมีประกันความเสี่ยงต่ำ นอกจากลดหย่อนภาษีแล้ว ยังได้รับความคุ้มครองชีวิตอีกด้วย", 
+                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 5 },
+                            feedback: "ตอบข้อกังวลได้ดี ให้ข้อมูลที่มั่นใจและสร้างความไว้วางใจ"
+                        },
+                        { 
+                            text: "การลงทุนมีความเสี่ยง แต่โดยรวมแล้วแผนนี้ค่อนข้างปลอดภัย", 
+                            scores: { clarity: 3, relevance: 3, pressure: 2, relationship: 3 },
+                            feedback: "ให้ข้อมูลแต่ไม่ละเอียดพอที่จะคลายความกังวล"
+                        },
+                        { 
+                            text: "ไม่ต้องกังวลไปหรอกครับ ประกันนี้ดีมากและมีความเสี่ยงต่ำ", 
+                            scores: { clarity: 2, relevance: 2, pressure: 3, relationship: 2 },
+                            feedback: "ไม่ได้ให้ข้อมูลที่เพียงพอและดูเหมือนไม่จริงใจกับความกังวลของลูกค้า"
+                        }
+                    ]
+                }
+            ],
+            
+            // ตัวเลือกสำหรับจริต "คิดคำนวณ"
+            analytical: [
+                {
+                    customer: "ผมต้องการข้อมูลเชิงลึกเกี่ยวกับประกันลดหย่อนภาษี ทั้งในแง่ของผลตอบแทนและความคุ้มครอง",
+                    options: [
+                        { 
+                            text: "แน่นอนครับ นี่เป็นข้อมูลเชิงลึกเกี่ยวกับอัตราผลตอบแทนย้อนหลัง 5 ปี และการกระจายความเสี่ยงของพอร์ตการลงทุน", 
+                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
+                            feedback: "ตอบสนองความต้องการข้อมูลเชิงลึกได้ดี ให้ข้อมูลที่ครบถ้วน"
+                        },
+                        { 
+                            text: "ประกันนี้ให้ผลตอบแทนดีและมีความคุ้มครองครบถ้วน", 
+                            scores: { clarity: 2, relevance: 2, pressure: 2, relationship: 2 },
+                            feedback: "ให้ข้อมูลทั่วไป ไม่มีข้อมูลเชิงลึกตามที่ลูกค้าต้องการ"
+                        },
+                        { 
+                            text: "แผนนี้ดีมาก มีผลตอบแทนสูง ควรตัดสินใจเร็วๆ เพราะมีโปรโมชันพิเศษ", 
+                            scores: { clarity: 2, relevance: 3, pressure: 5, relationship: 2 },
+                            feedback: "ไม่ให้ข้อมูลเชิงลึกและพยายามเร่งการตัดสินใจมากเกินไป"
+                        }
+                    ]
+                },
+                {
+                    customer: "ช่วยแสดงตัวเลขและกราฟเปรียบเทียบแผนนี้กับทางเลือกอื่นให้ดูหน่อย",
+                    options: [
+                        { 
+                            text: "ได้ครับ นี่เป็นตารางเปรียบเทียบแผนนี้กับผลิตภัณฑ์อื่นในตลาด ทั้งในแง่ของผลตอบแทน อัตราความเสี่ยง และสิทธิประโยชน์ด้านภาษี", 
+                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 5 },
+                            feedback: "ตอบสนองความต้องการข้อมูลเปรียบเทียบได้ดีเยี่ยม"
+                        },
+                        { 
+                            text: "แผนนี้ดีกว่าผลิตภัณฑ์อื่นในหลายด้าน แต่ผมไม่มีข้อมูลเปรียบเทียบขณะนี้", 
+                            scores: { clarity: 2, relevance: 3, pressure: 2, relationship: 3 },
+                            feedback: "ไม่สามารถให้ข้อมูลที่ลูกค้าต้องการได้อย่างครบถ้วน"
+                        },
+                        { 
+                            text: "ไม่ต้องเปรียบเทียบให้ยุ่งยาก แผนนี้ดีที่สุดแล้ว", 
+                            scores: { clarity: 1, relevance: 1, pressure: 4, relationship: 1 },
+                            feedback: "ไม่ให้ข้อมูลและพยายามโน้มน้าวมากเกินไป"
+                        }
+                    ]
+                }
+            ]
+        };
 
         // ตัวแปรเกม
         let currentScene = 0;
-        let score = 0;
+        let score = {
+            clarity: 0,
+            relevance: 0,
+            pressure: 0,
+            relationship: 0
+        };
         let selectedGender = null;
+        let selectedCustomer = null;
+        let selectedSituation = null;
         let backgroundMusic;
 
         // อ้างอิง DOM elements
         const genderSelection = document.getElementById('gender-selection');
+        const customerSelection = document.getElementById('customer-selection');
+        const situationSelection = document.getElementById('situation-selection');
         const gameScene = document.getElementById('game-scene');
         const resultScene = document.getElementById('result-scene');
+        const nextToCustomerBtn = document.getElementById('next-to-customer');
+        const nextToSituationBtn = document.getElementById('next-to-situation');
         const startGameBtn = document.getElementById('start-game');
         const restartGameBtn = document.getElementById('restart-game');
         const employeeImg = document.getElementById('employee-img');
         const employeeName = document.getElementById('employee-name');
+        const customerImg = document.getElementById('customer-img');
+        const customerName = document.getElementById('customer-name');
         const customerDialogue = document.getElementById('customer-dialogue');
         const employeeDialogue = document.getElementById('employee-dialogue');
         const dialogueOptions = document.getElementById('dialogue-options');
         const currentScoreDisplay = document.getElementById('current-score');
         const finalScoreDisplay = document.getElementById('final-score');
         const resultFeedback = document.getElementById('result-feedback');
+        const skillAnalysis = document.getElementById('skill-analysis');
+        const progressBar = document.getElementById('conversation-progress');
         const musicControl = document.getElementById('music-control');
         const backgroundMusicElement = document.getElementById('background-music');
 
         // เลือกเพศพนักงาน
-        document.querySelectorAll('.gender-option').forEach(option => {
+        document.querySelectorAll('#gender-selection .selection-option').forEach(option => {
             option.addEventListener('click', function() {
-                document.querySelectorAll('.gender-option').forEach(opt => {
+                document.querySelectorAll('#gender-selection .selection-option').forEach(opt => {
                     opt.classList.remove('selected');
                 });
                 this.classList.add('selected');
                 selectedGender = this.getAttribute('data-gender');
+                nextToCustomerBtn.disabled = false;
+            });
+        });
+
+        // ไปยังหน้าเลือกจริตลูกค้า
+        nextToCustomerBtn.addEventListener('click', function() {
+            genderSelection.classList.remove('active');
+            customerSelection.classList.add('active');
+        });
+
+        // เลือกจริตลูกค้า
+        document.querySelectorAll('#customer-selection .selection-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#customer-selection .selection-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                selectedCustomer = this.getAttribute('data-customer');
+                nextToSituationBtn.disabled = false;
+            });
+        });
+
+        // ไปยังหน้าเลือกสถานการณ์
+        nextToSituationBtn.addEventListener('click', function() {
+            customerSelection.classList.remove('active');
+            situationSelection.classList.add('active');
+        });
+
+        // เลือกสถานการณ์
+        document.querySelectorAll('#situation-selection .selection-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#situation-selection .selection-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                selectedSituation = this.getAttribute('data-situation');
                 startGameBtn.disabled = false;
             });
         });
 
         // เริ่มเกม
         startGameBtn.addEventListener('click', function() {
-            genderSelection.classList.remove('active');
+            situationSelection.classList.remove('active');
             gameScene.classList.add('active');
             
             // ตั้งค่าพนักงานตามเพศที่เลือก
-            employeeImg.src = gameData[selectedGender].image;
-            employeeName.textContent = gameData[selectedGender].name;
+            employeeImg.src = gameData.employees[selectedGender].image;
+            employeeName.textContent = gameData.employees[selectedGender].name;
+            
+            // ตั้งค่าลูกค้าตามจริตที่เลือก
+            const customer = gameData.customers[selectedCustomer];
+            customerImg.src = customer.image;
+            customerName.textContent = customer.name + " (" + customer.type + ")";
             
             // เริ่มเล่นเพลงพื้นหลัง
             backgroundMusicElement.volume = 0.3;
@@ -447,16 +912,21 @@
         // โหลดฉากปัจจุบัน
         function loadScene(sceneIndex) {
             currentScene = sceneIndex;
+            const customerData = gameData.customers[selectedCustomer];
+            const scene = conversationData[selectedCustomer][sceneIndex];
             
-            if (currentScene >= conversationData.length) {
+            if (!scene) {
                 endGame();
                 return;
             }
             
-            const scene = conversationData[sceneIndex];
+            // อัพเดทแถบความคืบหน้า
+            const progressPercentage = ((currentScene + 1) / conversationData[selectedCustomer].length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
             
-            // แสดงบทสนทนาของลูกค้า
-            customerDialogue.textContent = scene.customer;
+            // แสดงบทสนทนาของลูกค้า (ปรับตามสถานการณ์)
+            const situationDialogues = customerData.dialogues[selectedSituation];
+            customerDialogue.textContent = situationDialogues[currentScene] || scene.customer;
             employeeDialogue.textContent = "";
             
             // สร้างตัวเลือกบทสนทนา
@@ -466,17 +936,22 @@
                 optionElement.className = 'option';
                 optionElement.textContent = option.text;
                 optionElement.addEventListener('click', function() {
-                    selectOption(option.score, option.text);
+                    selectOption(option.scores, option.text, option.feedback);
                 });
                 dialogueOptions.appendChild(optionElement);
             });
         }
 
         // เลือกตัวเลือกบทสนทนา
-        function selectOption(optionScore, optionText) {
-            // อัพเดทคะแนน
-            score += optionScore;
-            currentScoreDisplay.textContent = score;
+        function selectOption(optionScores, optionText, feedback) {
+            // อัพเดทคะแนนในแต่ละมิติ
+            for (const dimension in optionScores) {
+                score[dimension] += optionScores[dimension];
+            }
+            
+            // คำนวณคะแนนรวม
+            const totalScore = score.clarity + score.relevance + score.relationship - score.pressure;
+            currentScoreDisplay.textContent = totalScore;
             
             // แสดงข้อความที่พนักงานเลือก
             employeeDialogue.textContent = optionText;
@@ -495,22 +970,72 @@
             gameScene.classList.remove('active');
             resultScene.classList.add('active');
             
-            // แสดงคะแนนสุดท้าย
-            finalScoreDisplay.textContent = score;
+            // คำนวณคะแนนรวม
+            const totalScore = score.clarity + score.relevance + score.relationship - score.pressure;
+            finalScoreDisplay.textContent = totalScore;
             
             // ให้คำติชมตามคะแนน
             let feedback = "";
-            if (score >= 20) {
+            if (totalScore >= 30) {
                 feedback = "ยอดเยี่ยมมาก! คุณมีทักษะการเป็นที่ปรึกษาที่ดีมาก รู้จักสร้างความสัมพันธ์กับลูกค้าและนำเสนอผลิตภัณฑ์ได้อย่างเหมาะสม ไม่ยัดเยียดและทำให้ลูกค้ารู้สึกสบายใจ";
-            } else if (score >= 15) {
+            } else if (totalScore >= 20) {
                 feedback = "ดีมาก! คุณมีทักษะการสนทนาที่ดี แต่ยังสามารถพัฒนาการฟังและตอบคำถามลูกค้าให้ลึกซึ้งมากขึ้นได้";
-            } else if (score >= 10) {
+            } else if (totalScore >= 10) {
                 feedback = "พอใช้! คุณสื่อสารได้แต่ยังขาดเทคนิคการสร้างความสัมพันธ์และนำเสนอที่ดึงดูดใจลูกค้า ลองฝึกฟังลูกค้าให้มากขึ้นและตอบสนองความต้องการของพวกเขาอย่างแท้จริง";
             } else {
                 feedback = "ต้องปรับปรุง! การสนทนาของคุณยังยัดเยียดและไม่ตอบโจทย์ความต้องการของลูกค้า ลองฝึกทักษะการฟังและการตั้งคำถามเพื่อทำความเข้าใจลูกค้ามากขึ้น";
             }
             
             resultFeedback.textContent = feedback;
+            
+            // แสดงการวิเคราะห์ทักษะ
+            displaySkillAnalysis();
+        }
+
+        // แสดงการวิเคราะห์ทักษะ
+        function displaySkillAnalysis() {
+            skillAnalysis.innerHTML = `
+                <div class="skill-category">
+                    <div class="skill-title">การสื่อสารชัดเจน</div>
+                    <div class="skill-description">
+                        ${score.clarity >= 8 ? 
+                            "คุณสื่อสารได้ชัดเจนและเข้าใจง่าย ให้ข้อมูลที่ครบถ้วน" : 
+                            score.clarity >= 5 ? 
+                            "คุณสื่อสารได้ดีแต่บางครั้งข้อมูลอาจไม่ละเอียดพอ" : 
+                            "คุณควรพัฒนาการสื่อสารให้ชัดเจนและให้ข้อมูลที่ครบถ้วนมากขึ้น"}
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <div class="skill-title">การตอบสนองความต้องการ</div>
+                    <div class="skill-description">
+                        ${score.relevance >= 8 ? 
+                            "คุณตอบสนองความต้องการของลูกค้าได้ดีมาก รู้จักปรับการสื่อสารให้เหมาะกับจริตลูกค้า" : 
+                            score.relevance >= 5 ? 
+                            "คุณตอบสนองความต้องการได้ดีแต่ยังปรับตัวกับจริตลูกค้าได้ไม่เต็มที่" : 
+                            "คุณควรฝึกฟังและวิเคราะห์ความต้องการของลูกค้าให้มากขึ้น"}
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <div class="skill-title">การสร้างความสัมพันธ์</div>
+                    <div class="skill-description">
+                        ${score.relationship >= 8 ? 
+                            "คุณสร้างความสัมพันธ์กับลูกค้าได้ดี สร้างความไว้วางใจและความรู้สึกเป็นกันเอง" : 
+                            score.relationship >= 5 ? 
+                            "คุณสร้างความสัมพันธ์ได้ดีแต่ยังพัฒนาต่อไปได้อีก" : 
+                            "คุณควรพัฒนาทักษะการสร้างความสัมพันธ์กับลูกค้าให้มากขึ้น"}
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <div class="skill-title">การไม่กดดันลูกค้า</div>
+                    <div class="skill-description">
+                        ${score.pressure <= 4 ? 
+                            "คุณให้พื้นที่ลูกค้าในการตัดสินใจได้ดี ไม่เร่งรัดหรือกดดัน" : 
+                            score.pressure <= 7 ? 
+                            "คุณพยายามไม่กดดันลูกค้าแต่บางครั้งอาจเร่งรีบเกินไป" : 
+                            "คุณควรระวังการกดดันลูกค้าและให้พื้นที่ในการตัดสินใจมากขึ้น"}
+                    </div>
+                </div>
+            `;
         }
 
         // รีเซ็ตเกม
@@ -520,14 +1045,23 @@
             
             // รีเซ็ตตัวแปรเกม
             currentScene = 0;
-            score = 0;
-            currentScoreDisplay.textContent = score;
+            score = {
+                clarity: 0,
+                relevance: 0,
+                pressure: 0,
+                relationship: 0
+            };
+            currentScoreDisplay.textContent = 0;
             selectedGender = null;
+            selectedCustomer = null;
+            selectedSituation = null;
             
-            // รีเซ็ตการเลือกเพศ
-            document.querySelectorAll('.gender-option').forEach(opt => {
+            // รีเซ็ตการเลือกทั้งหมด
+            document.querySelectorAll('.selection-option').forEach(opt => {
                 opt.classList.remove('selected');
             });
+            nextToCustomerBtn.disabled = true;
+            nextToSituationBtn.disabled = true;
             startGameBtn.disabled = true;
         });
 
