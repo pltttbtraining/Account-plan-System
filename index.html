@@ -2,1062 +2,911 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH5: Conversation Master - เกมฝึกการสนทนา</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ASI - Account Strategy Intelligence</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
+                    colors: {
+                        brand: { 50:'#f0f9ff', 100:'#e0f2fe', 500:'#0ea5e9', 600:'#0284c7', 900:'#0c4a6e' },
+                        risk: { critical:'#ef4444', high:'#f97316', medium:'#22c55e' }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Kanit', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            color: #333;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            position: relative;
-        }
-        
-        header {
-            background: linear-gradient(to right, #1a3a8f, #2a4ab0);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 5px solid #fdbb2d;
-            position: relative;
-        }
-        
-        .rh5-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #fdbb2d;
-            color: #1a3a8f;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-        
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .game-area {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            min-height: 70vh;
-        }
-        
-        .scene {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-        
-        .active {
-            display: flex;
-        }
-        
-        .characters {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            min-height: 300px;
-            position: relative;
-        }
-        
-        .character {
-            text-align: center;
-            width: 45%;
-            padding: 15px;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        
-        .character-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 15px;
-            border: 5px solid #2a4ab0;
-            background-color: #e9ecef;
-        }
-        
-        .speech-bubble {
-            position: absolute;
-            background: white;
-            border: 2px solid #2a4ab0;
-            border-radius: 15px;
-            padding: 15px;
-            max-width: 80%;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-        
-        .speech-bubble.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .customer-bubble {
-            top: 10px;
-            left: 10px;
-        }
-        
-        .employee-bubble {
-            bottom: 10px;
-            right: 10px;
-        }
-        
-        .speech-bubble:after {
-            content: '';
-            position: absolute;
-            border-style: solid;
-            border-width: 10px;
-        }
-        
-        .customer-bubble:after {
-            top: 100%;
-            left: 30px;
-            border-color: #2a4ab0 transparent transparent transparent;
-        }
-        
-        .employee-bubble:after {
-            bottom: 100%;
-            right: 30px;
-            border-color: transparent transparent #2a4ab0 transparent;
-        }
-        
-        .options {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .option {
-            background-color: #e9ecef;
-            border: 2px solid #adb5bd;
-            border-radius: 8px;
-            padding: 12px 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-        }
-        
-        .option:hover {
-            background-color: #2a4ab0;
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .score-display {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 10px 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            font-weight: bold;
-            color: #1a3a8f;
-        }
-        
-        .result-screen {
-            text-align: center;
-            padding: 30px;
-        }
-        
-        .result-title {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #1a3a8f;
-        }
-        
-        .result-score {
-            font-size: 48px;
-            font-weight: bold;
-            color: #2a4ab0;
-            margin: 20px 0;
-        }
-        
-        .result-feedback {
-            font-size: 18px;
-            margin: 20px 0;
-            line-height: 1.6;
-            text-align: left;
-        }
-        
-        .btn {
-            background: linear-gradient(to right, #1a3a8f, #2a4ab0);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn:disabled {
-            background: #adb5bd;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .gender-selection, .customer-selection, .situation-selection {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .selection-option {
-            text-align: center;
-            cursor: pointer;
-            padding: 15px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            width: 140px;
-        }
-        
-        .selection-option:hover, .selection-option.selected {
-            border-color: #2a4ab0;
-            background-color: #f0f4ff;
-        }
-        
-        .selection-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 10px;
-            border: 3px solid #adb5bd;
-        }
-        
-        .selected .selection-img {
-            border-color: #2a4ab0;
-        }
-        
-        .music-control {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 10px 15px;
-            border-radius: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(to right, #1a3a8f, #2a4ab0);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        
-        .skill-analysis {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .skill-category {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .skill-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #1a3a8f;
-        }
-        
-        .skill-description {
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        .situation-icon {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 10px;
-        }
-        
-        .signature {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            font-style: italic;
-            color: #6c757d;
-            border-top: 1px solid #dee2e6;
-        }
-        
-        .signature-line {
-            display: inline-block;
-            width: 150px;
-            height: 1px;
-            background: #6c757d;
-            margin: 0 10px;
-            vertical-align: middle;
-        }
-        
-        @media (max-width: 768px) {
-            .characters {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .character {
-                width: 90%;
-                margin-bottom: 15px;
-            }
-            
-            .character-img {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .skill-analysis {
-                grid-template-columns: 1fr;
-            }
-            
-            .selection-option {
-                width: 120px;
-            }
-            
-            .selection-img {
-                width: 80px;
-                height: 80px;
-            }
-        }
+        body { background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        input:disabled, select:disabled, textarea:disabled { background-color: #f3f4f6; color: #6b7280; cursor: not-allowed; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="rh5-badge">RH5</div>
-            <h1>RH5: Conversation Master</h1>
-            <p>เกมฝึกการสนทนา - การนำเสนอประกันลดหย่อนภาษีสำหรับพนักงานธนาคาร</p>
-        </header>
+<body class="text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-brand-900 text-white shadow-lg z-20 shrink-0">
+        <div class="px-4 py-3 flex justify-between items-center max-w-7xl mx-auto">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-inner">
+                    <i class="fa-solid fa-brain text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">ASI System</h1>
+                    <p class="text-xs text-brand-100 opacity-80">AI Risk Analytics</p>
+                </div>
+            </div>
+            <div class="hidden sm:block text-xs opacity-75" id="current-date"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-container" class="flex-1 overflow-y-auto bg-gray-50 relative pb-20">
         
-        <div class="game-area">
-            <!-- หน้าเลือกเพศพนักงาน -->
-            <div id="gender-selection" class="scene active">
-                <div class="dialogue-box">
-                    <h2>เลือกเพศของพนักงานธนาคาร</h2>
-                    <p>เลือกเพศของคุณเพื่อกำหนดตัวละครและบทสนทนาให้เหมาะสม</p>
-                    
-                    <div class="gender-selection">
-                        <div class="selection-option" data-gender="male">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=banker-male&backgroundColor=65c9ff,b6e3f4" alt="พนักงานชาย" class="selection-img">
-                            <p>พนักงานชาย</p>
-                        </div>
-                        <div class="selection-option" data-gender="female">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=banker-female&backgroundColor=ffd5dc,d1d4f9" alt="พนักงานหญิง" class="selection-img">
-                            <p>พนักงานหญิง</p>
-                        </div>
-                    </div>
-                    
-                    <button id="next-to-customer" class="btn" disabled>ต่อไป</button>
+        <!-- PANEL 1: START -->
+        <section id="panel-start" class="p-4 h-full flex flex-col justify-center items-center fade-in text-center">
+            <div class="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full border border-gray-100">
+                <div class="w-20 h-20 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                    <i class="fa-solid fa-robot"></i>
                 </div>
-            </div>
-            
-            <!-- หน้าเลือกจริตลูกค้า -->
-            <div id="customer-selection" class="scene">
-                <div class="dialogue-box">
-                    <h2>เลือกจริตของลูกค้า</h2>
-                    <p>เลือกจริตของลูกค้าที่คุณต้องการฝึกสนทนาด้วย</p>
-                    
-                    <div class="customer-selection">
-                        <div class="selection-option" data-customer="achiever">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=achiever-male&backgroundColor=ffafcc,cdb4db" alt="เป้าประสงค์" class="selection-img">
-                            <p>เป้าประสงค์ (ชาย)</p>
-                            <small>มุ่งเน้นผลลัพธ์</small>
-                        </div>
-                        <div class="selection-option" data-customer="celebrity">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=celebrity-female&backgroundColor=ffc8dd,ffafcc" alt="หนึ่งดารา" class="selection-img">
-                            <p>หนึ่งดารา (หญิง)</p>
-                            <small>ชอบการยอมรับ</small>
-                        </div>
-                        <div class="selection-option" data-customer="careful">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=careful-female&backgroundColor=a2d2ff,bde0fe" alt="ถนอมจิตร" class="selection-img">
-                            <p>ถนอมจิตร (หญิง)</p>
-                            <small>ระมัดระวัง</small>
-                        </div>
-                        <div class="selection-option" data-customer="analytical">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=analytical-male&backgroundColor=ccd5ae,e9edc9" alt="คิดคำนวณ" class="selection-img">
-                            <p>คิดคำนวณ (ชาย)</p>
-                            <small>ใช้ข้อมูลตัดสินใจ</small>
-                        </div>
-                    </div>
-                    
-                    <button id="next-to-situation" class="btn" disabled>ต่อไป</button>
-                </div>
-            </div>
-            
-            <!-- หน้าเลือกสถานการณ์ -->
-            <div id="situation-selection" class="scene">
-                <div class="dialogue-box">
-                    <h2>เลือกสถานการณ์</h2>
-                    <p>เลือกสถานการณ์จำลองที่คุณต้องการฝึกฝน</p>
-                    
-                    <div class="situation-selection">
-                        <div class="selection-option" data-situation="branch">
-                            <img src="https://cdn-icons-png.flaticon.com/512/2554/2554883.png" alt="ที่สาขาธนาคาร" class="situation-icon">
-                            <p>ที่สาขาธนาคาร</p>
-                            <small>ลูกค้าเดินเข้ามาเอง</small>
-                        </div>
-                        <div class="selection-option" data-situation="office">
-                            <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" alt="นัดพบนอกสถานที่" class="situation-icon">
-                            <p>นัดพบนอกสถานที่</p>
-                            <small>พบลูกค้าที่ทำงาน</small>
-                        </div>
-                        <div class="selection-option" data-situation="phone">
-                            <img src="https://cdn-icons-png.flaticon.com/512/126/126341.png" alt="การโทรหาลูกค้า" class="situation-icon">
-                            <p>การโทรหาลูกค้า</p>
-                            <small>ติดต่อลูกค้าทางโทรศัพท์</small>
-                        </div>
-                    </div>
-                    
-                    <button id="start-game" class="btn" disabled>เริ่มเกม</button>
-                </div>
-            </div>
-            
-            <!-- หน้าเกมหลัก -->
-            <div id="game-scene" class="scene">
-                <div class="score-display">
-                    คะแนน: <span id="current-score">0</span>
-                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">ยินดีต้อนรับสู่ ASI</h2>
+                <p class="text-gray-500 mb-8">ระบบวิเคราะห์และวางแผนกลยุทธ์ลูกค้าอัจฉริยะ<br>บูรณาการด้วยเทคโนโลยี AI</p>
                 
-                <div class="progress-bar">
-                    <div class="progress" id="conversation-progress"></div>
-                </div>
+                <button onclick="navTo('create')" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i> เริ่มต้นใช้งาน
+                </button>
+            </div>
+        </section>
+
+        <!-- PANEL 2: CREATE CUSTOMER -->
+        <section id="panel-create" class="hidden p-4 max-w-5xl mx-auto pb-24">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800"><i class="fa-solid fa-user-plus mr-2 text-brand-500"></i>สร้างลูกค้า</h2>
+                <button onclick="resetForm()" class="text-sm text-red-500 hover:text-red-700"><i class="fa-solid fa-rotate-left"></i> ล้างค่า</button>
+            </div>
+
+            <form id="customer-form" class="space-y-4">
                 
-                <div class="characters">
-                    <div class="character">
-                        <img id="employee-img" src="" alt="พนักงานธนาคาร" class="character-img">
-                        <h3 id="employee-name">พนักงานธนาคาร</h3>
-                        <div id="employee-bubble" class="speech-bubble employee-bubble"></div>
-                    </div>
-                    
-                    <div class="character">
-                        <img id="customer-img" src="" alt="ลูกค้า" class="character-img">
-                        <h3 id="customer-name">ลูกค้า</h3>
-                        <div id="customer-bubble" class="speech-bubble customer-bubble"></div>
+                <!-- A. Employee -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" class="w-full px-4 py-3 bg-gray-50 flex justify-between font-semibold text-gray-700" onclick="toggleSection('sec-emp')">
+                        <span>A. ข้อมูลพนักงาน</span><i class="fa-solid fa-chevron-down text-xs transition" id="icon-sec-emp"></i>
+                    </button>
+                    <div id="sec-emp" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="lbl">ชื่อพนักงาน *</label><input type="text" name="empName" class="inp" required></div>
+                        <div><label class="lbl">รหัสพนักงาน *</label><input type="text" name="empId" class="inp" required></div>
+                        <div>
+                            <label class="lbl">ตำแหน่ง *</label>
+                            <select name="empPos" class="inp">
+                                <option value="BM">BM</option><option value="Wealth">Wealth</option><option value="CISA">CISA</option>
+                                <option value="CFSA">CFSA</option><option value="Yindee">Yindee</option><option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="lbl">RH *</label>
+                                <select name="empRH" id="empRH" onchange="updateZones()" class="inp">
+                                    <option value="">เลือก RH</option>
+                                    <option value="RH1">RH1</option><option value="RH2">RH2</option><option value="RH3">RH3</option>
+                                    <option value="RH4">RH4</option><option value="RH5">RH5</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="lbl">Zone *</label>
+                                <select name="empZone" id="empZone" class="inp" disabled>
+                                    <option value="">กรุณาเลือก RH ก่อน</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="options" id="dialogue-options">
-                    <!-- ตัวเลือกบทสนทนาจะแสดงที่นี่ -->
+
+                <!-- B. Customer Info -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" class="w-full px-4 py-3 bg-gray-50 flex justify-between font-semibold text-gray-700" onclick="toggleSection('sec-cust')">
+                        <span>B. ข้อมูลส่วนตัวลูกค้า</span><i class="fa-solid fa-chevron-down text-xs transition" id="icon-sec-cust"></i>
+                    </button>
+                    <div id="sec-cust" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="lbl">ชื่อนามสมมุติ *</label>
+                            <div class="flex gap-2">
+                                <input type="text" name="custName" id="custName" class="inp w-full" required>
+                                <label class="flex items-center gap-1 text-xs whitespace-nowrap"><input type="checkbox" onchange="toggleUnknown(this, 'custName')"> ไม่ทราบ</label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="lbl">อายุ *</label><input type="number" name="custAge" class="inp" required></div>
+                            <div>
+                                <label class="lbl">เพศ *</label>
+                                <select name="custGender" class="inp"><option>ชาย</option><option>หญิง</option><option>อื่นๆ</option></select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="lbl">อาชีพ *</label>
+                            <select name="custJob" id="custJob" onchange="toggleBusinessSection()" class="inp">
+                                <option value="พนักงานบริษัท">พนักงานบริษัท</option><option value="ข้าราชการ">ข้าราชการ</option>
+                                <option value="เจ้าของกิจการ/ธุรกิจส่วนตัว">เจ้าของกิจการ/ธุรกิจส่วนตัว</option><option value="แพทย์">แพทย์</option>
+                                <option value="วิศวกร">วิศวกร</option><option value="ครู">ครู</option>
+                                <option value="นักกฎหมาย">นักกฎหมาย</option><option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl">รายได้ต่อเดือน *</label>
+                            <input type="number" name="custIncome" id="custIncome" oninput="calcYearlyIncome()" class="inp" placeholder="บาท">
+                            <div class="text-xs text-gray-400 mt-1">ต่อปี: <span id="displayYearlyIncome" class="font-bold text-brand-600">0</span> บาท</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="lbl">สวัสดิการ</label>
+                                <select name="custWelfare" class="inp">
+                                    <option>ไม่มี</option><option>มี - วงเงินสูง</option><option>มี - วงเงินกลาง</option>
+                                    <option>มี - วงเงินต่ำ</option><option>มี - ทุนประกันต่อปี</option>
+                                </select>
+                            </div>
+                            <div><label class="lbl">ทุนประกันต่อปี</label><input type="number" name="custInsCapital" class="inp"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- C. Family Info -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" class="w-full px-4 py-3 bg-gray-50 flex justify-between font-semibold text-gray-700" onclick="toggleSection('sec-fam')">
+                        <span>C. ข้อมูลครอบครัว</span><i class="fa-solid fa-chevron-down text-xs transition" id="icon-sec-fam"></i>
+                    </button>
+                    <div id="sec-fam" class="p-4 grid grid-cols-1 gap-4 hidden">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="lbl">สถานภาพ</label><select name="famStatus" class="inp"><option>โสด</option><option>สมรส</option><option>หม้าย</option><option>หย่า</option></select></div>
+                            <div><label class="lbl">อายุคู่สมรส</label><input type="number" name="spouseAge" class="inp"></div>
+                        </div>
+                        <div>
+                            <label class="lbl">อาชีพคู่สมรส</label>
+                            <select name="spouseJob" class="inp">
+                                <option value="ไม่มี">ไม่มี</option><option value="พนักงานบริษัท">พนักงานบริษัท</option><option value="ข้าราชการ">ข้าราชการ</option>
+                                <option value="เจ้าของกิจการ/ธุรกิจส่วนตัว">เจ้าของกิจการ/ธุรกิจส่วนตัว</option><option value="แพทย์">แพทย์</option><option value="แม่บ้าน">แม่บ้าน</option><option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="lbl">มีบุตรหรือไม่</label>
+                            <select name="hasChild" id="hasChild" onchange="toggleChildFields()" class="inp"><option value="ไม่มี">ไม่มี</option><option value="มี">มี</option></select>
+                        </div>
+                        <div id="childFields" class="hidden pl-4 border-l-2 border-brand-200 space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="lbl">จำนวนบุตร</label><input type="number" name="childCount" class="inp"></div>
+                                <div><label class="lbl">อายุบุตร (เช่น 8,5,2)</label><input type="text" name="childAges" class="inp"></div>
+                            </div>
+                            <div><label class="lbl">อาชีพบุตร</label><select name="childJob" class="inp"><option>นักเรียน</option><option>นักศึกษา</option><option>พนักงานบริษัท</option><option>อื่นๆ</option></select></div>
+                        </div>
+                        <div><label class="lbl">บุคคลอื่นที่ต้องดูแล</label><select name="hasDependant" class="inp"><option>ไม่มี</option><option>มี</option></select></div>
+                        <div><label class="lbl">รายละเอียดบุคคลที่ต้องดูแล</label><textarea name="dependantDetail" class="inp" rows="2"></textarea></div>
+                    </div>
+                </div>
+
+                <!-- D. Business Info -->
+                <div id="sec-biz-container" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" class="w-full px-4 py-3 bg-gray-50 flex justify-between font-semibold text-gray-700" onclick="toggleSection('sec-biz')">
+                        <span>D. ข้อมูลธุรกิจ</span><i class="fa-solid fa-chevron-down text-xs transition" id="icon-sec-biz"></i>
+                    </button>
+                    <div id="sec-biz" class="p-4 grid grid-cols-2 gap-4">
+                        <div class="col-span-2"><label class="lbl">ประเภทธุรกิจ</label><input type="text" name="bizType" class="inp"></div>
+                        <div><label class="lbl">ทุนจดทะเบียน</label><input type="number" name="bizCapital" class="inp"></div>
+                        <div><label class="lbl">รายได้ต่อปี</label><input type="number" name="bizIncome" class="inp"></div>
+                        <div><label class="lbl">กำไร</label><input type="number" name="bizProfit" class="inp"></div>
+                        <div><label class="lbl">ภาษีปีล่าสุด</label><input type="number" name="bizTax" class="inp"></div>
+                        <div><label class="lbl">สัดส่วนหุ้น (%)</label><input type="number" name="bizShare" class="inp"></div>
+                    </div>
+                </div>
+
+                <!-- E. Financial -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" class="w-full px-4 py-3 bg-gray-50 flex justify-between font-semibold text-gray-700" onclick="toggleSection('sec-fin')">
+                        <span>E. ผลิตภัณฑ์การเงิน</span><i class="fa-solid fa-chevron-down text-xs transition" id="icon-sec-fin"></i>
+                    </button>
+                    <div id="sec-fin" class="p-4 grid grid-cols-2 gap-4 hidden">
+                        <div><label class="lbl">เงินฝากออมทรัพย์</label><input type="number" name="finSaving" class="inp"></div>
+                        <div><label class="lbl">เงินฝากประจำ</label><input type="number" name="finFixed" class="inp"></div>
+                        <div><label class="lbl">กองทุน</label><input type="number" name="finFund" class="inp"></div>
+                        <div><label class="lbl">บัตรเครดิต</label><input type="number" name="finCredit" class="inp"></div>
+                        <div><label class="lbl">กู้บ้าน</label><input type="number" name="loanHome" class="inp"></div>
+                        <div><label class="lbl">กู้รถ</label><input type="number" name="loanCar" class="inp"></div>
+                        <div class="col-span-2"><label class="lbl">กู้ส่วนบุคคล</label><input type="number" name="loanPersonal" class="inp"></div>
+                    </div>
+                </div>
+
+                <!-- F. Insurance Policies -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" class="w-full px-4 py-3 bg-gray-50 flex justify-between font-semibold text-gray-700" onclick="toggleSection('sec-pol')">
+                        <span>F. ข้อมูลประกันที่มีอยู่</span><i class="fa-solid fa-chevron-down text-xs transition" id="icon-sec-pol"></i>
+                    </button>
+                    <div id="sec-pol" class="p-4 hidden space-y-4">
+                        <div id="policy-list" class="space-y-3"></div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="addPolicy()" class="flex-1 py-2 border-2 border-dashed border-gray-300 rounded text-gray-500 hover:border-brand-500 hover:text-brand-500"><i class="fa-solid fa-plus"></i> เพิ่มกรมธรรม์</button>
+                            <button type="button" onclick="clearPolicies()" class="px-4 py-2 text-gray-400 border border-gray-200 rounded hover:bg-red-50 hover:text-red-500">ไม่มีประกัน</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- H. Employee Comments -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" class="w-full px-4 py-3 bg-gray-50 flex justify-between font-semibold text-gray-700" onclick="toggleSection('sec-com')">
+                        <span>H. ความเห็นพนักงาน</span><i class="fa-solid fa-chevron-down text-xs transition" id="icon-sec-com"></i>
+                    </button>
+                    <div id="sec-com" class="p-4 space-y-3 hidden">
+                        <div><label class="lbl">ความเห็นเพิ่มเติม</label><textarea name="empComment" class="inp" rows="2"></textarea></div>
+                        <div>
+                            <label class="lbl">ประวัติการนำเสนอ</label>
+                            <select name="empHistory" class="inp"><option>ยังไม่เคยนำเสนอ</option><option>เคยนำเสนอแล้ว</option><option>เคยนำเสนอมากกว่า 3 ครั้ง</option></select>
+                        </div>
+                        <div><label class="lbl">ความคิดเห็นลูกค้า/ข้อโต้แย้ง</label><textarea name="custFeedback" class="inp" rows="2"></textarea></div>
+                        <div><label class="lbl">ผลิตภัณฑ์ที่จะนำเสนอ</label><input type="text" name="empPropose" class="inp"></div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="lbl">เบี้ยที่คาดหวัง</label><input type="number" name="expPremium" class="inp"></div>
+                            <div><label class="lbl">ทุนที่คาดหวัง</label><input type="number" name="expCapital" class="inp"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="button" onclick="saveCustomer()" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-brand-700"><i class="fa-solid fa-save"></i> บันทึกข้อมูลและวิเคราะห์ AI</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- PANEL 3: SEARCH -->
+        <section id="panel-search" class="hidden p-4 max-w-5xl mx-auto pb-24 fade-in">
+            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-search mr-2 text-brand-500"></i>ค้นหาข้อมูล</h2>
+            
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+                <select id="s-rh" onchange="updateSearchZones()" class="inp"><option value="">ทุก RH</option><option>RH1</option><option>RH2</option><option>RH3</option><option>RH4</option><option>RH5</option></select>
+                <select id="s-zone" class="inp" disabled><option value="">ทุก Zone</option></select>
+                <input type="text" id="s-emp" placeholder="ชื่อ/รหัสพนักงาน" class="inp">
+                <input type="text" id="s-cust" placeholder="Customer ID" class="inp">
+                <button onclick="performSearch()" class="md:col-span-4 bg-brand-600 text-white rounded py-2 font-bold"><i class="fa-solid fa-search"></i> ค้นหา</button>
+            </div>
+
+            <div id="search-result-area" class="space-y-2"></div>
+        </section>
+
+        <!-- PANEL 4: REPORT -->
+        <section id="panel-report" class="hidden p-4 max-w-5xl mx-auto pb-24 fade-in">
+            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-chart-pie mr-2 text-brand-500"></i>รายงานสรุป</h2>
+            
+            <div id="report-lock" class="text-center py-20">
+                <i class="fa-solid fa-lock text-4xl text-gray-300 mb-4"></i>
+                <h3 class="font-bold text-gray-600 mb-2">ยืนยันตัวตน</h3>
+                <input type="password" id="rep-pass" placeholder="Passcode (0229)" class="inp w-48 mx-auto text-center mb-2">
+                <button onclick="unlockReport()" class="bg-gray-800 text-white px-6 py-2 rounded">เข้าสู่ระบบ</button>
+            </div>
+
+            <div id="report-content" class="hidden space-y-6">
+                <!-- Report Controls -->
+                <div class="bg-white p-3 rounded-xl shadow-sm flex gap-2 overflow-x-auto">
+                    <button onclick="deleteData('select')" class="px-3 py-1 bg-gray-100 rounded text-xs hover:bg-red-100 text-red-600 whitespace-nowrap">ลบที่เลือก</button>
+                    <button onclick="deleteData('month')" class="px-3 py-1 bg-gray-100 rounded text-xs hover:bg-red-100 text-red-600 whitespace-nowrap">ลบเดือนนี้</button>
+                    <button onclick="deleteData('old')" class="px-3 py-1 bg-gray-100 rounded text-xs hover:bg-red-100 text-red-600 whitespace-nowrap">ลบเก่าสุด</button>
+                    <button onclick="deleteData('all')" class="px-3 py-1 bg-red-500 rounded text-xs text-white hover:bg-red-600 whitespace-nowrap">ลบทั้งหมด</button>
+                    <div class="flex-1"></div>
+                    <button onclick="exportData('pdf')" class="px-3 py-1 bg-brand-600 text-white rounded text-xs hover:bg-brand-700 whitespace-nowrap"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button onclick="exportData('excel')" class="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 whitespace-nowrap"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
+                        <div class="text-3xl font-bold text-brand-600" id="stat-all">0</div>
+                        <div class="text-xs text-gray-400">ลูกค้าทั้งหมด</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
+                        <div class="text-3xl font-bold text-green-500" id="stat-month">0</div>
+                        <div class="text-xs text-gray-400">เดือนนี้ (MTD)</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm"><h4 class="font-bold text-xs mb-2">ลูกค้าเดือนนี้แยก RH</h4><canvas id="chart-rh-mtd"></canvas></div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm"><h4 class="font-bold text-xs mb-2">ลูกค้าเดือนนี้แยกตำแหน่ง</h4><canvas id="chart-pos-mtd"></canvas></div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-xs mb-2">สัดส่วน Zone ของแต่ละ RH</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="zone-charts-container"></div>
                 </div>
             </div>
-            
-            <!-- หน้าผลลัพธ์ -->
-            <div id="result-scene" class="scene">
-                <div class="result-screen">
-                    <h2 class="result-title">สรุปผลการสนทนา</h2>
-                    <div class="result-score" id="final-score">0</div>
+        </section>
+
+        <!-- FULL CUSTOMER PROFILE MODAL -->
+        <div id="profile-modal" class="fixed inset-0 bg-black/80 z-50 hidden overflow-y-auto">
+            <div class="min-h-screen px-4 py-6 flex items-center justify-center">
+                <div class="bg-white w-full max-w-6xl rounded-2xl shadow-2xl relative flex flex-col md:flex-row overflow-hidden" id="profile-content">
                     
-                    <div class="result-feedback" id="result-feedback">
-                        <!-- คำติชมจะแสดงที่นี่ -->
+                    <!-- Left: Profile & Edit -->
+                    <div class="w-full md:w-1/3 bg-gray-50 border-r border-gray-200 p-6 overflow-y-auto max-h-[90vh]">
+                        <h3 class="font-bold text-lg text-brand-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-id-card"></i> Customer Profile
+                        </h3>
+                        <div id="modal-profile-view" class="space-y-3 text-sm"></div>
+                        <div class="mt-6 flex flex-col gap-2">
+                            <button onclick="enableEditMode()" class="bg-brand-100 text-brand-700 py-2 rounded hover:bg-brand-200 font-semibold"><i class="fa-solid fa-edit"></i> แก้ไขข้อมูล</button>
+                            <button onclick="exportProfilePDF()" class="bg-red-50 text-red-600 py-2 rounded hover:bg-red-100 font-semibold"><i class="fa-solid fa-file-pdf"></i> Export Profile PDF</button>
+                        </div>
                     </div>
-                    
-                    <h3 style="margin-top: 20px; color: #1a3a8f;">การวิเคราะห์ทักษะของคุณ</h3>
-                    <div class="skill-analysis" id="skill-analysis">
-                        <!-- การวิเคราะห์ทักษะจะแสดงที่นี่ -->
+
+                    <!-- Right: Dashboard & AI -->
+                    <div class="w-full md:w-2/3 p-6 overflow-y-auto max-h-[90vh] bg-white">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-lg text-brand-900"><i class="fa-solid fa-chart-line"></i> Dashboard & AI Analysis</h3>
+                            <button onclick="closeProfileModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-2xl"></i></button>
+                        </div>
+
+                        <!-- Mini Dashboard -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div class="bg-white border rounded-xl p-3 h-48 relative"><canvas id="dash-policy"></canvas></div>
+                            <div class="bg-white border rounded-xl p-3 h-48 relative"><canvas id="dash-finance"></canvas></div>
+                        </div>
+
+                        <!-- AI Analysis -->
+                        <div class="bg-brand-50 rounded-xl p-4 border border-brand-100 mb-6">
+                            <h4 class="font-bold text-brand-800 mb-2"><i class="fa-solid fa-robot"></i> ผลการวิเคราะห์จาก AI</h4>
+                            <div id="modal-ai-result" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
+                            <h4 class="font-bold text-yellow-800 mb-2"><i class="fa-solid fa-comments"></i> ความเห็นพนักงาน</h4>
+                            <div id="modal-comments-list" class="space-y-2 mb-3 text-sm text-gray-700"></div>
+                            <div class="flex gap-2">
+                                <input type="text" id="new-comment-user" placeholder="ชื่อคุณ" class="inp w-1/3 text-xs">
+                                <input type="text" id="new-comment-text" placeholder="เพิ่มความเห็น..." class="inp flex-1 text-xs">
+                                <button onclick="addComment()" class="bg-yellow-500 text-white px-4 rounded text-xs hover:bg-yellow-600">ส่ง</button>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <button id="restart-game" class="btn">เล่นอีกครั้ง</button>
                 </div>
             </div>
         </div>
-        
-        <div class="signature">
-            <span class="signature-line"></span>
-            Created by RH5 Training Specialist
-            <span class="signature-line"></span>
-        </div>
-    </div>
-    
-    <div class="music-control" id="music-control">
-        <span>🔊</span> เพลงพื้นหลัง
-    </div>
-    
+
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bg-white border-t border-gray-200 safe-bottom fixed bottom-0 w-full z-20 flex justify-around items-center h-16 shadow-lg">
+        <button onclick="navTo('start')" class="nav-btn active flex flex-col items-center justify-center w-full h-full text-brand-600" data-target="start"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">หน้าแรก</span></button>
+        <button onclick="navTo('create')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" data-target="create"><div class="bg-brand-500 text-white rounded-full w-10 h-10 flex items-center justify-center -mt-6 shadow-lg border-4 border-gray-50"><i class="fa-solid fa-plus text-lg"></i></div><span class="text-[10px] mt-1 font-semibold">สร้างลูกค้า</span></button>
+        <button onclick="navTo('search')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" data-target="search"><i class="fa-solid fa-search text-xl mb-1"></i><span class="text-[10px]">ค้นหา</span></button>
+        <button onclick="navTo('report')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" data-target="report"><i class="fa-solid fa-chart-simple text-xl mb-1"></i><span class="text-[10px]">รายงาน</span></button>
+    </nav>
+
     <script>
-        // ข้อมูลเกม
-        const gameData = {
-            // ข้อมูลพนักงาน
-            employees: {
-                male: {
-                    name: "คุณธนวัฒน์",
-                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=banker-male&backgroundColor=65c9ff,b6e3f4",
-                },
-                female: {
-                    name: "คุณสาวิตรี",
-                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=banker-female&backgroundColor=ffd5dc,d1d4f9",
-                }
-            },
-            
-            // ข้อมูลลูกค้าตามจริต
-            customers: {
-                achiever: {
-                    name: "คุณวิศวะ",
-                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=achiever-male&backgroundColor=ffafcc,cdb4db",
-                    type: "เป้าประสงค์",
-                },
-                celebrity: {
-                    name: "คุณดาว",
-                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=celebrity-female&backgroundColor=ffc8dd,ffafcc",
-                    type: "หนึ่งดารา",
-                },
-                careful: {
-                    name: "คุณสายใจ",
-                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=careful-female&backgroundColor=a2d2ff,bde0fe",
-                    type: "ถนอมจิตร",
-                },
-                analytical: {
-                    name: "คุณวิทย์",
-                    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=analytical-male&backgroundColor=ccd5ae,e9edc9",
-                    type: "คิดคำนวณ",
-                }
-            }
+        // --- DATA & CONFIG ---
+        const rhData = {
+            "RH1": ["Zone จตุจักร", "Zone ธนบุรี", "Zone บางกะปิ", "Zone สาทร", "Zone สุขุมวิท"],
+            "RH2": ["Zone ชลบุรี", "Zone บางนา", "Zone พัทยา", "Zone ระยอง"],
+            "RH3": ["Zone เชียงใหม่", "Zone นครสวรรค์", "Zone นนทบุรี", "Zone พิษณุโลก", "Zone อยุธยา"],
+            "RH4": ["Zone ดอนเมือง", "Zone นครราชสีมา", "Zone สระบุรี", "Zone อุดรธานี", "Zone อุบลราชธานี"],
+            "RH5": ["Zone ภูเก็ต", "Zone ราชบุรี", "Zone สมุทรสาคร", "Zone สุราษฎร์ธานี", "Zone หาดใหญ่"]
         };
 
-        // ข้อมูลบทสนทนาและตัวเลือก
-        const conversationData = {
-            // ตัวเลือกสำหรับจริต "เป้าประสงค์"
-            achiever: [
-                {
-                    customer: "สวัสดีครับ ผมได้ยินมาว่าธนาคารมีผลิตภัณฑ์ลดหย่อนภาษีสิ้นปี",
-                    options: [
-                        { 
-                            text: "สวัสดีครับ ยินดีต้อนรับครับ ธนาคารของเรามีแผนประกันชีวิตที่ช่วยลดหย่อนภาษีได้สูงสุด 100,000 บาทต่อปีครับ", 
-                            scores: { clarity: 4, relevance: 5, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "สวัสดีครับ เรามีผลิตภัณฑ์หลายแบบ แต่ที่ช่วยลดหย่อนภาษีได้ดีคือประกันชีวิตครับ", 
-                            scores: { clarity: 3, relevance: 4, pressure: 3, relationship: 3 },
-                        },
-                        { 
-                            text: "สวัสดีครับ ใช่แล้ว เรามีประกันลดหย่อนภาษี ลงทะเบียนวันนี้พรุ่งนี้เริ่มลดหย่อนภาษีได้เลยครับ", 
-                            scores: { clarity: 4, relevance: 4, pressure: 5, relationship: 2 },
-                        }
-                    ]
-                },
-                {
-                    customer: "ผมสนใจแผนที่ให้ผลตอบแทนดีและช่วยลดหย่อนภาษีได้จริง",
-                    options: [
-                        { 
-                            text: "แผนนี้ให้ผลตอบแทนเฉลี่ย 3-5% ต่อปี และช่วยลดหย่อนภาษีได้ตามจำนวนเบี้ยที่จ่ายจริง ซึ่งประมาณ 10-15% ของเบี้ยประกัน", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
-                        },
-                        { 
-                            text: "ประกันช่วยลดหย่อนภาษีได้แน่นอน และยังได้ผลตอบแทนด้วย แต่รายละเอียดขึ้นอยู่กับหลายปัจจัย", 
-                            scores: { clarity: 2, relevance: 3, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "คุณจะประหยัดภาษีได้มากแน่นอน และยังได้ผลตอบแทนที่ดี ควรตัดสินใจเร็วๆ เพราะโปรโมชันกำลังจะหมด", 
-                            scores: { clarity: 3, relevance: 4, pressure: 5, relationship: 2 },
-                        }
-                    ]
-                },
-                {
-                    customer: "แผนนี้ใช้เวลานานเท่าไหร่กว่าจะเห็นผล และต้องลงทุนขั้นต่ำเท่าไร",
-                    options: [
-                        { 
-                            text: "แผนนี้เริ่มลดหย่อนภาษีได้ตั้งแต่ปีแรกที่ทำ และมีเบี้ยประกันขั้นต่ำเดือนละ 1,000 บาท ระยะเวลาคุ้มครองขั้นต่ำ 10 ปี", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
-                        },
-                        { 
-                            text: "ใช้เวลาประมาณ 1-2 ปีกว่าจะเห็นผล และมีหลายแผนให้เลือกตามงบประมาณ", 
-                            scores: { clarity: 3, relevance: 3, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "ไม่ต้องกังวลเรื่องเวลาและงบประมาณ เรามีแผนที่เหมาะกับทุกคน", 
-                            scores: { clarity: 2, relevance: 2, pressure: 3, relationship: 2 },
-                        }
-                    ]
-                }
-            ],
-            
-            // ตัวเลือกสำหรับจริต "หนึ่งดารา"
-            celebrity: [
-                {
-                    customer: "สวัสดีค่ะ ฉันได้ยินมาว่ามีประกันลดหย่อนภาษีแบบพิเศษสำหรับลูกค้าพิเศษใช่ไหมคะ",
-                    options: [
-                        { 
-                            text: "สวัสดีค่ะ ใช่แล้วค่ะ เรามีแผนพิเศษสำหรับลูกค้าคุณภาพเช่นคุณโดยเฉพาะ ซึ่งมีสิทธิพิเศษเพิ่มเติมเช่นบริการให้คำปรึกษาการเงินส่วนตัว", 
-                            scores: { clarity: 4, relevance: 5, pressure: 2, relationship: 5 },
-                        },
-                        { 
-                            text: "สวัสดีค่ะ ประกันลดหย่อนภาษีมีให้เลือกหลายแผน คุณสมบัติผู้ซื้อก็คล้ายๆ กัน", 
-                            scores: { clarity: 3, relevance: 2, pressure: 2, relationship: 2 },
-                        },
-                        { 
-                            text: "สวัสดีค่ะ แผนนี้ดีมากและเหมาะกับคุณ ลงทะเบียนวันนี้เพื่อรับสิทธิพิเศษก่อนใคร", 
-                            scores: { clarity: 3, relevance: 4, pressure: 4, relationship: 3 },
-                        }
-                    ]
-                },
-                {
-                    customer: "ฉันชอบแผนที่ให้บริการพิเศษและทำให้ฉันรู้สึกเป็นคนสำคัญ",
-                    options: [
-                        { 
-                            text: "แผนนี้มีบริการให้คำปรึกษาการเงินส่วนตัว พร้อมรับประกันสุขภาพเพิ่มเติม และเช็คสุขภาพประจำปีฟรี เพื่อตอบสนองความต้องการพิเศษของลูกค้าคุณภาพ", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
-                        },
-                        { 
-                            text: "ก็คล้ายกับประกันทั่วไป แต่มีบางจุดที่แตกต่างกันเล็กน้อย", 
-                            scores: { clarity: 2, relevance: 2, pressure: 2, relationship: 2 },
-                        },
-                        { 
-                            text: "แผนนี้พิเศษมาก ลงทะเบียนวันนี้เพื่อรับของสมนาคุณพิเศษด้วย", 
-                            scores: { clarity: 3, relevance: 4, pressure: 4, relationship: 3 },
-                        }
-                    ]
-                },
-                {
-                    customer: "แผนนี้มีบริการเสริมอะไรบ้างที่ทำให้ฉันรู้สึกพิเศษ",
-                    options: [
-                        { 
-                            text: "นอกจากบริการให้คำปรึกษาการเงินส่วนตัวแล้ว เรายังมีบริการจองคิวพิเศษที่สาขา บริการตอบคำถามทางการเงินผ่าน Line Official และรับส่วนลดพิเศษสำหรับผลิตภัณฑ์อื่นๆ ของธนาคาร", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 5 },
-                        },
-                        { 
-                            text: "มีบริการทั่วไปเหมือนประกันอื่นๆ ในตลาด", 
-                            scores: { clarity: 2, relevance: 2, pressure: 2, relationship: 2 },
-                        },
-                        { 
-                            text: "มีบริการหลายอย่าง แต่ที่สำคัญคือคุณควรลงทะเบียนวันนี้", 
-                            scores: { clarity: 2, relevance: 3, pressure: 4, relationship: 2 },
-                        }
-                    ]
-                }
-            ],
-            
-            // ตัวเลือกสำหรับจริต "ถนอมจิตร"
-            careful: [
-                {
-                    customer: "สวัสดีค่ะ ดิฉันสนใจประกันลดหย่อนภาษี แต่ต้องการทราบรายละเอียดให้แน่ใจก่อน",
-                    options: [
-                        { 
-                            text: "สวัสดีค่ะ ยินดีให้บริการค่ะ ผมมีเอกสารข้อมูลครบถ้วนพร้อมตัวอย่างกรณีศึกษาให้คุณพิจารณาอย่างรอบคอบ", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
-                        },
-                        { 
-                            text: "สวัสดีค่ะ ประกันลดหย่อนภาษีมีหลายแบบ แต่หลักการคล้ายกัน คือช่วยลดหย่อนภาษีได้", 
-                            scores: { clarity: 2, relevance: 3, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "สวัสดีค่ะ คุณไม่ต้องกังวล ประกันนี้ดีแน่นอน หลายคนใช้แล้วประทับใจ", 
-                            scores: { clarity: 2, relevance: 2, pressure: 3, relationship: 2 },
-                        }
-                    ]
-                },
-                {
-                    customer: "ดิฉันกังวลเรื่องความเสี่ยง ถ้าจ่ายเบี้ยไปแล้วจะได้ประโยชน์คุ้มค่าไหม",
-                    options: [
-                        { 
-                            text: "เข้าใจความกังวลของคุณค่ะ ประกันนี้มีการลงทุนในกองทุนรวมคุณภาพและมีประกันความเสี่ยงต่ำ นอกจากลดหย่อนภาษีแล้ว ยังได้รับความคุ้มครองชีวิตและผลตอบแทนจากการลงทุนอีกด้วย", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 5 },
-                        },
-                        { 
-                            text: "การลงทุนมีความเสี่ยง แต่โดยรวมแล้วแผนนี้ค่อนข้างปลอดภัย", 
-                            scores: { clarity: 3, relevance: 3, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "ไม่ต้องกังวลไปหรอกค่ะ ประกันนี้ดีมากและมีความเสี่ยงต่ำ", 
-                            scores: { clarity: 2, relevance: 2, pressure: 3, relationship: 2 },
-                        }
-                    ]
-                },
-                {
-                    customer: "มีลูกค้าคนอื่นที่ใช้แผนนี้แล้วประสบความสำเร็จบ้างไหมคะ",
-                    options: [
-                        { 
-                            text: "แน่นอนค่ะ เรามีกรณีศึกษาของลูกค้าที่มีโปรไฟล์คล้ายคุณซึ่งใช้แผนนี้และสามารถลดหย่อนภาษีได้จริง พร้อมได้รับผลตอบแทนตาม预期", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
-                        },
-                        { 
-                            text: "มีลูกค้าหลายคนที่ใช้แผนนี้และพอใจ", 
-                            scores: { clarity: 3, relevance: 3, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "แน่นอน มีหลายคนที่ใช้แล้วได้ผลดี คุณไม่ต้องกังวล", 
-                            scores: { clarity: 2, relevance: 2, pressure: 3, relationship: 2 },
-                        }
-                    ]
-                }
-            ],
-            
-            // ตัวเลือกสำหรับจริต "คิดคำนวณ"
-            analytical: [
-                {
-                    customer: "สวัสดีครับ ผมต้องการข้อมูลเชิงลึกเกี่ยวกับประกันลดหย่อนภาษี",
-                    options: [
-                        { 
-                            text: "สวัสดีครับ ยินดีให้บริการครับ นี่เป็นข้อมูลเชิงลึกเกี่ยวกับอัตราผลตอบแทนย้อนหลัง 5 ปี และการกระจายความเสี่ยงของพอร์ตการลงทุน", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
-                        },
-                        { 
-                            text: "สวัสดีครับ ประกันนี้ให้ผลตอบแทนดีและมีความคุ้มครองครบถ้วน", 
-                            scores: { clarity: 2, relevance: 2, pressure: 2, relationship: 2 },
-                        },
-                        { 
-                            text: "สวัสดีครับ แผนนี้ดีมาก มีผลตอบแทนสูง ควรตัดสินใจเร็วๆ เพราะมีโปรโมชันพิเศษ", 
-                            scores: { clarity: 2, relevance: 3, pressure: 5, relationship: 2 },
-                        }
-                    ]
-                },
-                {
-                    customer: "ช่วยแสดงตัวเลขและกราฟเปรียบเทียบแผนนี้กับทางเลือกอื่นให้ดูหน่อย",
-                    options: [
-                        { 
-                            text: "ได้ครับ นี่เป็นตารางเปรียบเทียบแผนนี้กับผลิตภัณฑ์อื่นในตลาด ทั้งในแง่ของผลตอบแทน อัตราความเสี่ยง และสิทธิประโยชน์ด้านภาษี พร้อมกราฟแสดงผลการดำเนินงานย้อนหลัง", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 5 },
-                        },
-                        { 
-                            text: "แผนนี้ดีกว่าผลิตภัณฑ์อื่นในหลายด้าน แต่ผมไม่มีข้อมูลเปรียบเทียบขณะนี้", 
-                            scores: { clarity: 2, relevance: 3, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "ไม่ต้องเปรียบเทียบให้ยุ่งยาก แผนนี้ดีที่สุดแล้ว", 
-                            scores: { clarity: 1, relevance: 1, pressure: 4, relationship: 1 },
-                        }
-                    ]
-                },
-                {
-                    customer: "อัตราผลตอบแทนคำนวณอย่างไร และมีปัจจัยอะไรบ้างที่ส่งผลต่อผลตอบแทน",
-                    options: [
-                        { 
-                            text: "อัตราผลตอบแทนคำนวณจากผลการดำเนินงานของกองทุนรวมที่ประกันชีวิตนำไปลงทุน โดยมีปัจจัยหลักคือประสิทธิภาพของกองทุนรวม อัตราดอกเบี้ย และภาวะเศรษฐกิจ ซึ่งเรามีรายละเอียดการคำนวณและสมมติฐานในเอกสารนี้", 
-                            scores: { clarity: 5, relevance: 5, pressure: 1, relationship: 4 },
-                        },
-                        { 
-                            text: "ผลตอบแทนขึ้นอยู่กับหลายปัจจัย แต่โดยรวมแล้วคาดว่าจะได้ผลตอบแทนที่ดี", 
-                            scores: { clarity: 3, relevance: 3, pressure: 2, relationship: 3 },
-                        },
-                        { 
-                            text: "คุณจะได้ผลตอบแทนที่ดีแน่นอน ไม่ต้องกังวลเรื่องรายละเอียด", 
-                            scores: { clarity: 2, relevance: 2, pressure: 3, relationship: 2 },
-                        }
-                    ]
-                }
-            ]
-        };
+        const DB_KEY = 'asi_v2_db';
+        let customers = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+        let currentCustomer = null; // For modal view
 
-        // ตัวแปรเกม
-        let currentScene = 0;
-        let score = {
-            clarity: 0,
-            relevance: 0,
-            pressure: 0,
-            relationship: 0
-        };
-        let selectedGender = null;
-        let selectedCustomer = null;
-        let selectedSituation = null;
-
-        // อ้างอิง DOM elements
-        const genderSelection = document.getElementById('gender-selection');
-        const customerSelection = document.getElementById('customer-selection');
-        const situationSelection = document.getElementById('situation-selection');
-        const gameScene = document.getElementById('game-scene');
-        const resultScene = document.getElementById('result-scene');
-        const nextToCustomerBtn = document.getElementById('next-to-customer');
-        const nextToSituationBtn = document.getElementById('next-to-situation');
-        const startGameBtn = document.getElementById('start-game');
-        const restartGameBtn = document.getElementById('restart-game');
-        const employeeImg = document.getElementById('employee-img');
-        const employeeName = document.getElementById('employee-name');
-        const customerImg = document.getElementById('customer-img');
-        const customerName = document.getElementById('customer-name');
-        const customerBubble = document.getElementById('customer-bubble');
-        const employeeBubble = document.getElementById('employee-bubble');
-        const dialogueOptions = document.getElementById('dialogue-options');
-        const currentScoreDisplay = document.getElementById('current-score');
-        const finalScoreDisplay = document.getElementById('final-score');
-        const resultFeedback = document.getElementById('result-feedback');
-        const skillAnalysis = document.getElementById('skill-analysis');
-        const progressBar = document.getElementById('conversation-progress');
-
-        // เลือกเพศพนักงาน
-        document.querySelectorAll('#gender-selection .selection-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('#gender-selection .selection-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                this.classList.add('selected');
-                selectedGender = this.getAttribute('data-gender');
-                nextToCustomerBtn.disabled = false;
+        // --- UTILS ---
+        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(customers)); }
+        function $(id) { return document.getElementById(id); }
+        function fmtMoney(n) { return (n || 0).toLocaleString(); }
+        
+        // --- NAVIGATION ---
+        function navTo(panelId) {
+            ['start','create','search','report'].forEach(p => {
+                $(`panel-${p}`).classList.add('hidden');
+                $(`panel-${p}`).classList.remove('fade-in');
             });
-        });
-
-        // ไปยังหน้าเลือกจริตลูกค้า
-        nextToCustomerBtn.addEventListener('click', function() {
-            genderSelection.classList.remove('active');
-            customerSelection.classList.add('active');
-        });
-
-        // เลือกจริตลูกค้า
-        document.querySelectorAll('#customer-selection .selection-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('#customer-selection .selection-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                this.classList.add('selected');
-                selectedCustomer = this.getAttribute('data-customer');
-                nextToSituationBtn.disabled = false;
+            $(`panel-${panelId}`).classList.remove('hidden');
+            $(`panel-${panelId}`).classList.add('fade-in');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('text-brand-600'); b.classList.add('text-gray-400');
+                if(b.dataset.target === panelId) { b.classList.add('text-brand-600'); b.classList.remove('text-gray-400'); }
             });
-        });
 
-        // ไปยังหน้าเลือกสถานการณ์
-        nextToSituationBtn.addEventListener('click', function() {
-            customerSelection.classList.remove('active');
-            situationSelection.classList.add('active');
-        });
-
-        // เลือกสถานการณ์
-        document.querySelectorAll('#situation-selection .selection-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('#situation-selection .selection-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                this.classList.add('selected');
-                selectedSituation = this.getAttribute('data-situation');
-                startGameBtn.disabled = false;
-            });
-        });
-
-        // เริ่มเกม
-        startGameBtn.addEventListener('click', function() {
-            situationSelection.classList.remove('active');
-            gameScene.classList.add('active');
-            
-            // ตั้งค่าพนักงานตามเพศที่เลือก
-            const employee = gameData.employees[selectedGender];
-            employeeImg.src = employee.image;
-            employeeName.textContent = employee.name;
-            
-            // ตั้งค่าลูกค้าตามจริตที่เลือก
-            const customer = gameData.customers[selectedCustomer];
-            customerImg.src = customer.image;
-            customerName.textContent = customer.name + " (" + customer.type + ")";
-            
-            // เริ่มเกม
-            loadScene(0);
-        });
-
-        // โหลดฉากปัจจุบัน
-        function loadScene(sceneIndex) {
-            currentScene = sceneIndex;
-            const scene = conversationData[selectedCustomer][sceneIndex];
-            
-            if (!scene) {
-                endGame();
-                return;
-            }
-            
-            // อัพเดทแถบความคืบหน้า
-            const progressPercentage = ((currentScene + 1) / conversationData[selectedCustomer].length) * 100;
-            progressBar.style.width = `${progressPercentage}%`;
-            
-            // แสดงบทสนทนาของลูกค้า
-            const customerDialogueText = scene.customer;
-            
-            // ล้าง speech bubble ก่อนหน้า
-            customerBubble.classList.remove('active');
-            employeeBubble.classList.remove('active');
-            
-            // แสดงข้อความลูกค้าใน speech bubble หลังจากหน่วงเวลาเล็กน้อย
-            setTimeout(() => {
-                customerBubble.textContent = customerDialogueText;
-                customerBubble.classList.add('active');
-            }, 500);
-            
-            // สร้างตัวเลือกบทสนทนา
-            dialogueOptions.innerHTML = "";
-            scene.options.forEach((option) => {
-                const optionElement = document.createElement('div');
-                optionElement.className = 'option';
-                optionElement.textContent = option.text;
-                optionElement.addEventListener('click', function() {
-                    selectOption(option.scores, option.text);
-                });
-                dialogueOptions.appendChild(optionElement);
-            });
+            if(panelId === 'report') { $('report-lock').classList.remove('hidden'); $('report-content').classList.add('hidden'); }
         }
 
-        // เลือกตัวเลือกบทสนทนา
-        function selectOption(optionScores, optionText) {
-            // อัพเดทคะแนนในแต่ละมิติ
-            for (const dimension in optionScores) {
-                score[dimension] += optionScores[dimension];
-            }
-            
-            // คำนวณคะแนนรวม
-            const totalScore = score.clarity + score.relevance + score.relationship - score.pressure;
-            currentScoreDisplay.textContent = totalScore;
-            
-            // แสดงข้อความที่พนักงานเลือกใน speech bubble
-            employeeBubble.textContent = optionText;
-            employeeBubble.classList.add('active');
-            
-            // ลบตัวเลือกทั้งหมด
-            dialogueOptions.innerHTML = "";
-            
-            // ไปยังฉากถัดไปหลังจากหน่วงเวลา
-            setTimeout(() => {
-                loadScene(currentScene + 1);
-            }, 3000);
+        function toggleSection(id) {
+            const el = $(id); const icon = $(`icon-${id}`);
+            el.classList.toggle('hidden');
+            icon.style.transform = el.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
         }
 
-        // จบเกม
-        function endGame() {
-            gameScene.classList.remove('active');
-            resultScene.classList.add('active');
+        // --- CREATE FORM LOGIC ---
+        function updateZones() {
+            const rh = $('empRH').value;
+            const zoneSel = $('empZone');
+            zoneSel.innerHTML = '<option value="">เลือก Zone</option>';
             
-            // คำนวณคะแนนรวม
-            const totalScore = score.clarity + score.relevance + score.relationship - score.pressure;
-            finalScoreDisplay.textContent = totalScore;
-            
-            // ให้คำติชมตามคะแนน
-            let feedback = "";
-            if (totalScore >= 40) {
-                feedback = "ยอดเยี่ยมมาก! คุณมีทักษะการเป็นที่ปรึกษาที่ดีมาก รู้จักสร้างความสัมพันธ์กับลูกค้าและนำเสนอผลิตภัณฑ์ได้อย่างเหมาะสม ไม่ยัดเยียดและทำให้ลูกค้ารู้สึกสบายใจ";
-            } else if (totalScore >= 30) {
-                feedback = "ดีมาก! คุณมีทักษะการสนทนาที่ดี แต่ยังสามารถพัฒนาการฟังและตอบคำถามลูกค้าให้ลึกซึ้งมากขึ้นได้";
-            } else if (totalScore >= 20) {
-                feedback = "พอใช้! คุณสื่อสารได้แต่ยังขาดเทคนิคการสร้างความสัมพันธ์และนำเสนอที่ดึงดูดใจลูกค้า ลองฝึกฟังลูกค้าให้มากขึ้นและตอบสนองความต้องการของพวกเขาอย่างแท้จริง";
+            if(rh && rhData[rh]) {
+                zoneSel.disabled = false;
+                rhData[rh].forEach(z => zoneSel.innerHTML += `<option value="${z}">${z}</option>`);
             } else {
-                feedback = "ต้องปรับปรุง! การสนทนาของคุณยังยัดเยียดและไม่ตอบโจทย์ความต้องการของลูกค้า ลองฝึกทักษะการฟังและการตั้งคำถามเพื่อทำความเข้าใจลูกค้ามากขึ้น";
+                zoneSel.disabled = true;
+                zoneSel.innerHTML = '<option value="">กรุณาเลือก RH ก่อน</option>';
             }
-            
-            resultFeedback.textContent = feedback;
-            
-            // แสดงการวิเคราะห์ทักษะ
-            displaySkillAnalysis();
         }
 
-        // แสดงการวิเคราะห์ทักษะ
-        function displaySkillAnalysis() {
-            skillAnalysis.innerHTML = `
-                <div class="skill-category">
-                    <div class="skill-title">การสื่อสารชัดเจน</div>
-                    <div class="skill-description">
-                        ${score.clarity >= 12 ? 
-                            "คุณสื่อสารได้ชัดเจนและเข้าใจง่าย ให้ข้อมูลที่ครบถ้วน" : 
-                            score.clarity >= 8 ? 
-                            "คุณสื่อสารได้ดีแต่บางครั้งข้อมูลอาจไม่ละเอียดพอ" : 
-                            "คุณควรพัฒนาการสื่อสารให้ชัดเจนและให้ข้อมูลที่ครบถ้วนมากขึ้น"}
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <div class="skill-title">การตอบสนองความต้องการ</div>
-                    <div class="skill-description">
-                        ${score.relevance >= 12 ? 
-                            "คุณตอบสนองความต้องการของลูกค้าได้ดีมาก รู้จักปรับการสื่อสารให้เหมาะกับจริตลูกค้า" : 
-                            score.relevance >= 8 ? 
-                            "คุณตอบสนองความต้องการได้ดีแต่ยังปรับตัวกับจริตลูกค้าได้ไม่เต็มที่" : 
-                            "คุณควรฝึกฟังและวิเคราะห์ความต้องการของลูกค้าให้มากขึ้น"}
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <div class="skill-title">การสร้างความสัมพันธ์</div>
-                    <div class="skill-description">
-                        ${score.relationship >= 12 ? 
-                            "คุณสร้างความสัมพันธ์กับลูกค้าได้ดี สร้างความไว้วางใจและความรู้สึกเป็นกันเอง" : 
-                            score.relationship >= 8 ? 
-                            "คุณสร้างความสัมพันธ์ได้ดีแต่ยังพัฒนาต่อไปได้อีก" : 
-                            "คุณควรพัฒนาทักษะการสร้างความสัมพันธ์กับลูกค้าให้มากขึ้น"}
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <div class="skill-title">การไม่กดดันลูกค้า</div>
-                    <div class="skill-description">
-                        ${score.pressure <= 6 ? 
-                            "คุณให้พื้นที่ลูกค้าในการตัดสินใจได้ดี ไม่เร่งรัดหรือกดดัน" : 
-                            score.pressure <= 9 ? 
-                            "คุณพยายามไม่กดดันลูกค้าแต่บางครั้งอาจเร่งรีบเกินไป" : 
-                            "คุณควรระวังการกดดันลูกค้าและให้พื้นที่ในการตัดสินใจมากขึ้น"}
+        function toggleUnknown(cb, inputId) {
+            const inp = $(inputId);
+            inp.disabled = cb.checked;
+            if(cb.checked) inp.value = "ไม่ทราบ/ไม่มีข้อมูล";
+            else inp.value = "";
+        }
+
+        function toggleBusinessSection() {
+            const job = $('custJob').value;
+            const sec = $('sec-biz-container');
+            if(job.includes("เจ้าของกิจการ") || job.includes("ธุรกิจส่วนตัว")) sec.classList.remove('hidden');
+            else sec.classList.add('hidden');
+        }
+
+        function toggleChildFields() {
+            const has = $('hasChild').value;
+            if(has === "มี") $('childFields').classList.remove('hidden');
+            else $('childFields').classList.add('hidden');
+        }
+
+        function calcYearlyIncome() {
+            const m = parseFloat($('custIncome').value) || 0;
+            $('displayYearlyIncome').innerText = fmtMoney(m * 12);
+        }
+
+        function addPolicy() {
+            const list = $('policy-list');
+            const id = Date.now();
+            const html = `
+                <div class="bg-gray-50 p-3 rounded border relative policy-item" id="pol-${id}">
+                    <button type="button" onclick="$('pol-${id}').remove()" class="absolute top-2 right-2 text-red-400"><i class="fa-solid fa-trash"></i></button>
+                    <div class="grid grid-cols-2 gap-2 text-sm pr-6">
+                        <select class="inp p-1 pol-type">
+                            <option value="สะสมทรัพย์">สะสมทรัพย์</option><option value="ตลอดชีพ">ตลอดชีพ</option>
+                            <option value="ชั่วระยะเวลา">ชั่วระยะเวลา</option><option value="สุขภาพ">สุขภาพ</option>
+                            <option value="บำนาญ">บำนาญ</option><option value="อุบัติเหตุ">อุบัติเหตุ</option>
+                            <option value="โรคร้ายแรง">โรคร้ายแรง</option>
+                        </select>
+                        <select class="inp p-1 pol-status"><option>กำลังชำระ</option><option>ชำระครบแล้ว</option><option>ใกล้ครบสัญญา</option></select>
+                        <input type="number" placeholder="ทุนประกัน" class="inp p-1 pol-sum">
+                        <input type="number" placeholder="เบี้ยต่อปี" class="inp p-1 pol-premium">
                     </div>
                 </div>
             `;
+            list.insertAdjacentHTML('beforeend', html);
+        }
+        function clearPolicies() { $('policy-list').innerHTML = ''; }
+
+        function resetForm() {
+            $('customer-form').reset();
+            clearPolicies();
+            $('displayYearlyIncome').innerText = '0';
+            updateZones();
         }
 
-        // รีเซ็ตเกม
-        restartGameBtn.addEventListener('click', function() {
-            resultScene.classList.remove('active');
-            genderSelection.classList.add('active');
-            
-            // รีเซ็ตตัวแปรเกม
-            currentScene = 0;
-            score = {
-                clarity: 0,
-                relevance: 0,
-                pressure: 0,
-                relationship: 0
-            };
-            currentScoreDisplay.textContent = 0;
-            selectedGender = null;
-            selectedCustomer = null;
-            selectedSituation = null;
-            
-            // รีเซ็ตการเลือกทั้งหมด
-            document.querySelectorAll('.selection-option').forEach(opt => {
-                opt.classList.remove('selected');
+        // --- AI LOGIC (THE BRAIN) ---
+        function runAI(data) {
+            let risks = [];
+            const yInc = data.income * 12;
+            const totalDeposit = data.fin.saving + data.fin.fixed;
+            const totalDebt = data.fin.home + data.fin.car + data.fin.personal;
+            const totalPremium = data.policies.reduce((sum, p) => sum + p.premium, 0);
+
+            // Rule 1: Income Risk (Critical)
+            if((data.fam.spouseJob === 'ไม่มี' || data.fam.spouseJob === 'แม่บ้าน') && data.fam.hasChild) {
+                risks.push({
+                    level: 'Critical', name: 'Income Risk', why: 'เป็นเสาหลักรายได้เดียวและมีบุตร',
+                    products: ['Term Life', 'Disability Insurance', 'Income Protection']
+                });
+            }
+
+            // Rule 6: Business Risk (Critical)
+            if(data.job.includes('เจ้าของกิจการ') && data.biz.capital > 0) {
+                risks.push({
+                    level: 'Critical', name: 'Business Risk', why: 'ความเสี่ยงการส่งต่อธุรกิจและภาษีมรดก',
+                    products: ['Key Man Protection', 'Trust Planning', 'Whole Life']
+                });
+            }
+
+            // Rule 2: Inflation Risk (High)
+            if(yInc > 0 && totalDeposit > (yInc * 5)) {
+                risks.push({
+                    level: 'High', name: 'Inflation Risk', why: `เงินฝากสูงกว่ารายได้ 5 เท่า (${fmtMoney(totalDeposit)})`,
+                    products: ['Endowment', 'LTF/RMF', 'Pension Plan']
+                });
+            }
+
+            // Rule 4: Health Risk (High)
+            if(['แพทย์','พยาบาล','วิศวกร','เจ้าของกิจการ/ธุรกิจส่วนตัว'].includes(data.job)) {
+                risks.push({
+                    level: 'High', name: 'Health Risk', why: `อาชีพ ${data.job} มีความเสี่ยงสุขภาพสูง`,
+                    products: ['Health High Plan', 'CI', 'PA Group']
+                });
+            }
+
+            // Rule 7: Debt Risk (High)
+            if(yInc > 0 && totalDebt > (yInc * 3)) {
+                risks.push({
+                    level: 'High', name: 'Debt Risk', why: `หนี้สินรวม ${fmtMoney(totalDebt)} สูงกว่ารายได้ 3 เท่า`,
+                    products: ['Credit Life', 'Disability', 'Health']
+                });
+            }
+
+            // Rule 9: Liquidity Risk (High)
+            if(yInc > 0 && totalPremium > (yInc * 0.15)) {
+                risks.push({
+                    level: 'High', name: 'Liquidity Risk', why: 'เบี้ยประกันเกิน 15% ของรายได้ต่อปี',
+                    products: ['ปรับโครงสร้างพอร์ต', 'Unit Linked (Top up)']
+                });
+            }
+
+            // Rule 3: Lifecycle Risk (Medium)
+            let lifeDesc = data.age <= 35 ? "วัยเริ่มทำงาน" : (data.age <= 45 ? "วัยสร้างครอบครัว" : "วัยใกล้เกษียณ");
+            let lifeProd = data.age <= 35 ? ['Savings', 'PA', 'Health'] : (data.age <= 45 ? ['Whole Life', 'Education', 'CI'] : ['Pension', 'Health Long Term']);
+            risks.push({ level: 'Medium', name: 'Lifecycle Risk', why: `อายุ ${data.age} ปี (${lifeDesc})`, products: lifeProd });
+
+            // Rule 5: Education Risk (Medium)
+            if(data.fam.hasChild) {
+                risks.push({ level: 'Medium', name: 'Education Risk', why: 'มีบุตรที่ต้องวางแผนการศึกษา', products: ['Education Plan', 'Endowment'] });
+            }
+
+            // Rule 8: Investment Risk (Medium)
+            const totalInvest = totalDeposit + data.fin.fund;
+            if(totalInvest > 0 && totalDeposit > (totalInvest * 0.7)) {
+                risks.push({ level: 'Medium', name: 'Investment Risk', why: 'เงินฝากกระจุกตัว > 70% ของพอร์ต', products: ['Unit Linked', 'Mutual Fund'] });
+            }
+
+            // Rule 10: Portfolio Risk (Medium)
+            // (Simple logic: if only 1 policy type > 60% count)
+            if(data.policies.length > 0) {
+                const types = {};
+                data.policies.forEach(p => types[p.type] = (types[p.type] || 0) + 1);
+                for(let t in types) {
+                    if(types[t] / data.policies.length > 0.6) {
+                        risks.push({ level: 'Medium', name: 'Portfolio Risk', why: `กระจุกตัวที่ ${t} เกิน 60%`, products: ['Diversify Product'] });
+                        break;
+                    }
+                }
+            }
+
+            // Sorting: Critical -> High -> Medium
+            const score = { 'Critical': 3, 'High': 2, 'Medium': 1 };
+            risks.sort((a,b) => score[b.level] - score[a.level]);
+
+            return risks.slice(0, 3); // Top 3
+        }
+
+        function saveCustomer() {
+            const f = $('customer-form');
+            if(!f.reportValidity()) return;
+
+            // Gather Policies
+            let pols = [];
+            document.querySelectorAll('.policy-item').forEach(el => {
+                pols.push({
+                    type: el.querySelector('.pol-type').value,
+                    status: el.querySelector('.pol-status').value,
+                    sum: parseFloat(el.querySelector('.pol-sum').value) || 0,
+                    premium: parseFloat(el.querySelector('.pol-premium').value) || 0
+                });
             });
-            nextToCustomerBtn.disabled = true;
-            nextToSituationBtn.disabled = true;
-            startGameBtn.disabled = true;
-        });
+
+            // Generate ID
+            const rh = f.empRH.value;
+            const date = new Date();
+            const idCode = `R${rh.replace('RH','')}-${String(date.getMonth()+1).padStart(2,'0')}${String(date.getFullYear()).substr(2,2)}${String(date.getHours()).padStart(2,'0')}${String(date.getMinutes()).padStart(2,'0')}`;
+
+            const data = {
+                id: idCode,
+                createdAt: date.toISOString(),
+                emp: { name: f.empName.value, id: f.empId.value, pos: f.empPos.value, rh: f.empRH.value, zone: f.empZone.value },
+                cust: { name: f.custName.value, age: parseInt(f.custAge.value), gender: f.custGender.value, job: f.custJob.value, income: parseFloat(f.custIncome.value)||0, welfare: f.custWelfare.value, insCap: parseFloat(f.custInsCapital.value)||0 },
+                fam: { status: f.famStatus.value, spouseAge: f.spouseAge.value, spouseJob: f.spouseJob.value, hasChild: f.hasChild.value === 'มี', childCount: f.childCount.value, childAges: f.childAges.value },
+                biz: { type: f.bizType.value, capital: parseFloat(f.bizCapital.value)||0, income: parseFloat(f.bizIncome.value)||0, share: f.bizShare.value },
+                fin: { saving: parseFloat(f.finSaving.value)||0, fixed: parseFloat(f.finFixed.value)||0, fund: parseFloat(f.finFund.value)||0, credit: parseFloat(f.finCredit.value)||0, home: parseFloat(f.loanHome.value)||0, car: parseFloat(f.loanCar.value)||0, personal: parseFloat(f.loanPersonal.value)||0 },
+                policies: pols,
+                comments: [{ user: f.empName.value, text: f.empComment.value, date: new Date().toLocaleDateString() }],
+                empHistory: f.empHistory.value,
+                custFeedback: f.custFeedback.value,
+                proposal: { product: f.empPropose.value, premium: f.expPremium.value, capital: f.expCapital.value }
+            };
+
+            // Analyze
+            data.analysis = runAI(data);
+
+            customers.unshift(data);
+            saveDB();
+            
+            alert(`บันทึกข้อมูลและวิเคราะห์เรียบร้อย\nCustomer ID: ${idCode}`);
+            resetForm();
+            navTo('search'); // Go to search to view result
+        }
+
+        // --- SEARCH & PROFILE ---
+        function updateSearchZones() {
+            const rh = $('s-rh').value;
+            const z = $('s-zone');
+            z.innerHTML = '<option value="">ทุก Zone</option>';
+            z.disabled = !rh;
+            if(rh && rhData[rh]) rhData[rh].forEach(x => z.innerHTML += `<option value="${x}">${x}</option>`);
+        }
+
+        function performSearch() {
+            const code = prompt("กรุณากรอกรหัสพนักงาน หรือ Special Pass Code (0229) เพื่อค้นหา");
+            if(code !== '0229' && !code) return alert("Access Denied");
+
+            const qRH = $('s-rh').value;
+            const qZone = $('s-zone').value;
+            const qEmp = $('s-emp').value.toLowerCase();
+            const qCust = $('s-cust').value.toLowerCase();
+
+            const res = customers.filter(c => {
+                return (!qRH || c.emp.rh === qRH) &&
+                       (!qZone || c.emp.zone === qZone) &&
+                       (!qEmp || c.emp.name.toLowerCase().includes(qEmp) || c.emp.id.toLowerCase().includes(qEmp)) &&
+                       (!qCust || c.id.toLowerCase().includes(qCust));
+            });
+
+            const area = $('search-result-area');
+            area.innerHTML = '';
+            if(res.length === 0) { area.innerHTML = '<div class="text-center text-gray-400 py-4">ไม่พบข้อมูล</div>'; return; }
+
+            res.forEach(c => {
+                area.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:bg-gray-50 cursor-pointer" onclick="openProfile('${c.id}')">
+                        <div>
+                            <div class="text-brand-600 font-bold text-sm">${c.id}</div>
+                            <div class="font-bold text-gray-800">${c.cust.name}</div>
+                            <div class="text-xs text-gray-500">${c.emp.rh} | ${c.emp.zone} | โดย ${c.emp.name}</div>
+                        </div>
+                        <div class="text-right">
+                             <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded font-bold">${c.analysis.length} ความเสี่ยง</span>
+                             <div class="text-xs text-gray-400 mt-1">${new Date(c.createdAt).toLocaleDateString('th-TH')}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openProfile(cid) {
+            currentCustomer = customers.find(c => c.id === cid);
+            if(!currentCustomer) return;
+
+            const c = currentCustomer;
+            const modal = $('profile-modal');
+            const view = $('modal-profile-view');
+            const ai = $('modal-ai-result');
+            const comm = $('modal-comments-list');
+
+            // Render Profile
+            view.innerHTML = `
+                <div class="bg-blue-50 p-2 rounded text-center mb-4">
+                    <span class="text-xs text-gray-500">Customer ID</span>
+                    <div class="text-xl font-bold text-brand-700 font-mono">${c.id}</div>
+                </div>
+                <p><strong>ชื่อ:</strong> <span contenteditable="false" data-field="cust.name">${c.cust.name}</span></p>
+                <p><strong>อายุ:</strong> ${c.cust.age} ปี | <strong>อาชีพ:</strong> ${c.cust.job}</p>
+                <p><strong>รายได้:</strong> ${fmtMoney(c.cust.income)}/เดือน</p>
+                <hr class="my-2">
+                <p><strong>RH:</strong> ${c.emp.rh} | <strong>Zone:</strong> ${c.emp.zone}</p>
+                <p><strong>ดูแลโดย:</strong> ${c.emp.name}</p>
+            `;
+
+            // Render AI
+            ai.innerHTML = '';
+            if(c.analysis.length === 0) ai.innerHTML = '<div class="text-green-500 text-sm">สุขภาพการเงินดีเยี่ยม ไม่พบความเสี่ยงหลัก</div>';
+            c.analysis.forEach(r => {
+                let color = r.level === 'Critical' ? 'bg-red-50 border-red-200 text-red-800' : (r.level === 'High' ? 'bg-orange-50 border-orange-200 text-orange-800' : 'bg-green-50 border-green-200 text-green-800');
+                let icon = r.level === 'Critical' ? '🚨' : (r.level === 'High' ? '⚠️' : 'ℹ️');
+                ai.innerHTML += `
+                    <div class="${color} border p-3 rounded-lg text-sm">
+                        <div class="flex justify-between font-bold">
+                            <span>${icon} ${r.name}</span>
+                            <span class="text-xs px-2 py-0.5 bg-white/50 rounded uppercase">${r.level}</span>
+                        </div>
+                        <div class="mt-1 text-xs opacity-90">${r.why}</div>
+                        <div class="mt-2 flex flex-wrap gap-1">
+                            ${r.products.map(p => `<span class="bg-white/60 px-2 py-0.5 rounded text-[10px] shadow-sm">${p}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render Charts
+            renderDashCharts(c);
+
+            // Render Comments
+            renderComments();
+
+            modal.classList.remove('hidden');
+        }
+
+        function renderComments() {
+            const list = $('modal-comments-list');
+            list.innerHTML = '';
+            currentCustomer.comments.forEach(cm => {
+                list.innerHTML += `<div class="bg-white p-2 rounded border border-gray-100"><strong class="text-brand-600">${cm.user}</strong>: ${cm.text} <span class="text-[10px] text-gray-400">(${cm.date})</span></div>`;
+            });
+        }
+
+        function addComment() {
+            const user = $('new-comment-user').value;
+            const text = $('new-comment-text').value;
+            if(!user || !text) return alert("ระบุชื่อและความเห็น");
+            
+            currentCustomer.comments.push({ user, text, date: new Date().toLocaleDateString() });
+            saveDB();
+            renderComments();
+            $('new-comment-text').value = '';
+        }
+
+        function closeProfileModal() { $('profile-modal').classList.add('hidden'); }
+
+        function enableEditMode() {
+            alert("เปิดโหมดแก้ไข: คุณสามารถแก้ไขข้อมูลลูกค้าได้ (ยกเว้น ID) แล้วบันทึก");
+            // In a real app, turn spans to inputs. Here simplified.
+            const newName = prompt("แก้ไขชื่อลูกค้า:", currentCustomer.cust.name);
+            if(newName) {
+                currentCustomer.cust.name = newName;
+                saveDB();
+                openProfile(currentCustomer.id); // Re-render
+            }
+        }
+
+        function exportProfilePDF() {
+            const element = $('profile-content');
+            const opt = { margin: 0.5, filename: `Profile_${currentCustomer.id}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' } };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        let chartPol = null, chartFin = null;
+        function renderDashCharts(c) {
+            if(chartPol) chartPol.destroy();
+            if(chartFin) chartFin.destroy();
+
+            // Policy Pie
+            const pTypes = {};
+            c.policies.forEach(p => pTypes[p.type] = (pTypes[p.type]||0)+1);
+            chartPol = new Chart($('dash-policy'), {
+                type: 'pie',
+                data: { labels: Object.keys(pTypes), datasets: [{ data: Object.values(pTypes), backgroundColor: ['#0ea5e9','#22c55e','#f97316','#ef4444','#a855f7'] }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } } } }
+            });
+
+            // Finance Doughnut
+            chartFin = new Chart($('dash-finance'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Deposit','Fund','Debt','Premium'],
+                    datasets: [{
+                        data: [c.fin.saving+c.fin.fixed, c.fin.fund, c.fin.home+c.fin.car+c.fin.personal, c.policies.reduce((s,p)=>s+p.premium,0)],
+                        backgroundColor: ['#3b82f6','#10b981','#ef4444','#f59e0b']
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } } } }
+            });
+        }
+
+        // --- REPORT LOGIC ---
+        function unlockReport() {
+            const p = $('rep-pass').value;
+            if(p === '0229') {
+                $('report-lock').classList.add('hidden');
+                $('report-content').classList.remove('hidden');
+                genReport();
+            } else alert("รหัสผิด");
+        }
+
+        let rCharts = [];
+        function genReport() {
+            // Stats
+            const now = new Date();
+            const mtd = customers.filter(c => {
+                const d = new Date(c.createdAt);
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            });
+            $('stat-all').innerText = customers.length;
+            $('stat-month').innerText = mtd.length;
+
+            // Chart RH MTD
+            const rhCounts = {};
+            mtd.forEach(c => rhCounts[c.emp.rh] = (rhCounts[c.emp.rh]||0)+1);
+            if(rCharts[0]) rCharts[0].destroy();
+            rCharts[0] = new Chart($('chart-rh-mtd'), {
+                type: 'doughnut',
+                data: { labels: Object.keys(rhCounts), datasets: [{ data: Object.values(rhCounts), backgroundColor: ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6'] }] }
+            });
+
+            // Chart Pos MTD
+            const posCounts = {};
+            mtd.forEach(c => posCounts[c.emp.pos] = (posCounts[c.emp.pos]||0)+1);
+            if(rCharts[1]) rCharts[1].destroy();
+            rCharts[1] = new Chart($('chart-pos-mtd'), {
+                type: 'doughnut',
+                data: { labels: Object.keys(posCounts), datasets: [{ data: Object.values(posCounts), backgroundColor: ['#0ea5e9','#6366f1','#ec4899'] }] }
+            });
+
+            // Zone by RH Cards
+            const container = $('zone-charts-container');
+            container.innerHTML = '';
+            ['RH1','RH2','RH3','RH4','RH5'].forEach(rh => {
+                const div = document.createElement('div');
+                div.className = "bg-gray-50 p-2 rounded border border-gray-200";
+                div.innerHTML = `<h5 class="text-[10px] font-bold text-center mb-1">${rh} Zones</h5><div class="h-32"><canvas id="c-zone-${rh}"></canvas></div>`;
+                container.appendChild(div);
+                
+                const zData = {};
+                customers.filter(c => c.emp.rh === rh).forEach(c => zData[c.emp.zone] = (zData[c.emp.zone]||0)+1);
+                
+                new Chart(div.querySelector('canvas'), {
+                    type: 'doughnut',
+                    data: { labels: Object.keys(zData), datasets: [{ data: Object.values(zData), backgroundColor: ['#cbd5e1','#94a3b8','#64748b','#475569','#334155'] }] },
+                    options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            });
+        }
+
+        function deleteData(mode) {
+            if(!confirm("ยืนยันการลบข้อมูล? การกระทำนี้ย้อนกลับไม่ได้")) return;
+            
+            if(mode === 'all') customers = [];
+            else if(mode === 'old') customers.pop(); // Remove last (oldest due to unshift)
+            else if(mode === 'month') {
+                const now = new Date();
+                customers = customers.filter(c => {
+                    const d = new Date(c.createdAt);
+                    return d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear();
+                });
+            }
+            saveDB();
+            genReport();
+            alert("ลบข้อมูลเรียบร้อย");
+        }
+
+        function exportData(type) {
+            if(type === 'excel') {
+                const ws = XLSX.utils.json_to_sheet(customers.map(c => ({
+                    ID: c.id, Name: c.cust.name, RH: c.emp.rh, Zone: c.emp.zone, Income: c.cust.income, Risks: c.analysis.length
+                })));
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Customers");
+                XLSX.writeFile(wb, "ASI_Data.xlsx");
+            } else {
+                alert("สำหรับ PDF กรุณาใช้ปุ่ม Export Profile ในหน้ารายละเอียดลูกค้าแต่ละราย");
+            }
+        }
+
+        // Init
+        const d = new Date();
+        $('current-date').innerText = d.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
     </script>
 </body>
 </html>
